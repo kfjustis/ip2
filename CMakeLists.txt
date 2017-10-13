@@ -1,5 +1,5 @@
 # Author: Kynan Justis
-# Date: Sep 13 2017
+# Date: Oct 13 2017
 
 cmake_minimum_required(VERSION 3.9)
 
@@ -13,4 +13,4 @@ project(ip2)
 find_package(OpenCV REQUIRED)
 
 # add sub dir
-#add_subdirectory(src)
+add_subdirectory(src)

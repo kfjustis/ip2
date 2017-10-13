@@ -1,10 +1,10 @@
 set(SRCS
         main.cpp
-        smoothing.cpp
+        #smoothing.cpp
     )
 
 set(HEADERS
-        smoothing.h
+        #smoothing.h
     )
 
 add_executable(${CMAKE_PROJECT_NAME} ${SRCS} ${HEADERS})
