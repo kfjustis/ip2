@@ -5,11 +5,64 @@ bool AverageMatrix(cv::Mat* src) {
     if (src == NULL) {
         std::cout << "\nError (smoothing.cpp/AverageMatrix): " << std::endl;
         std::cout << "\tPassed matrix was null" << std::endl;
+        return false;
     }
 
-    //if ()
+    if (CheckSliceDimensions(src) == false) {
+        std::cout << "\nError (smoothing.cpp/AverageMatrix): " << std::endl;
+        std::cout << "\tPassed matrix was not square" << std::endl;
+        return false;
+    }
+
+    // sum the elements
+    int sum = 0;
+    for (int i = 0; i < src->rows; ++i) {
+        for (int j = 0; j < src->cols; ++j) {
+            sum += (uchar) src->at<uchar>(i,j);
+        }
+    }
+
+    // calculate average
+    int total = src->rows * src->cols;
+    int average = sum / total;
+
+    // replace center value with average
+    src->at<uchar>((int) src->rows/2, (int) src->cols/2) = (uchar) average;
 
     return true;
+}
+
+void TEST_AverageMatrix() {
+    cv::Mat test_mat = cv::Mat::Mat(3, 3, CV_8UC1);
+
+    /* 5 3 6
+       2 1 9
+       8 4 7 */
+    test_mat.at<uchar>(0,0) = (uchar) 5;
+    test_mat.at<uchar>(0,1) = (uchar) 3;
+    test_mat.at<uchar>(0,2) = (uchar) 6;
+    test_mat.at<uchar>(1,0) = (uchar) 2;
+    test_mat.at<uchar>(1,1) = (uchar) 1;
+    test_mat.at<uchar>(1,2) = (uchar) 9;
+    test_mat.at<uchar>(2,0) = (uchar) 8;
+    test_mat.at<uchar>(2,1) = (uchar) 4;
+    test_mat.at<uchar>(2,2) = (uchar) 7;
+
+    if (AverageMatrix(&test_mat) == false) {
+        std::cout << "\nError (smoothing.cpp/TEST_AverageMatrix)" << std::endl;
+        std::cout << "\tTest failed in AverageMatrix fn" << std::endl;
+        return;
+    }
+
+    if (test_mat.at<uchar>(1,1) == (uchar) 5) {
+        std::cout << "Test passed (smoothing.cpp/TEST_AverageMatrix)" << std::endl;
+        std::cout << test_mat << std::endl;
+        return;
+    } else {
+        std::cout << "\nError (smoothing.cpp/TEST_AverageMatrix)" << std::endl;
+        std::cout << "\tTest failed. Value was: " << test_mat.at<uchar>(1,1) << std::endl;
+        return;
+    }
 }
 
 bool CheckSliceDimensions(const cv::Mat* src) {

@@ -14,6 +14,7 @@ namespace ip2 {
  * RETURN: bool - true on success, false on failure
  */
 bool AverageMatrix(cv::Mat* src);
+void TEST_AverageMatrix();
 
 /*
  * Checks that the dimensions of the slice are a perfect square.
