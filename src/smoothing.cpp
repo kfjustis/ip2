@@ -83,7 +83,7 @@ cv::Mat GetMatrixSlice(const cv::Mat* src_image, int row, int col, int kernel_si
 
     if (row + kernel_size > src_image->rows || col + kernel_size > src_image->cols) {
         std::cout << "\nError (smoothing.cpp/GetMatrixSlice): " << std::endl;
-        std::cout << "\tRequested coordinate cannot generate a slice" << std::endl;
+        std::cout << "\tRequested coordinate cannot generate a full slice" << std::endl;
         return cv::Mat();
     }
 
@@ -137,22 +137,12 @@ void TEST_GetMatrixSlice() {
     std::cout << "test_mat: " << std::endl;
     std::cout << test_mat << std::endl;
 
-    cv::Mat slice = GetMatrixSlice(&test_mat,0,0,2);
-    std::cout << "\n2x2 slice at 0,0" << std::endl;
-    std::cout << slice << std::endl;
-
-    //std::cout << "test_mat: " << std::endl;
-    //std::cout << test_mat << std::endl;
-
-    slice = GetMatrixSlice(&test_mat,0,1,2);
-    std::cout << "\n2x2 slice at 0,1" << std::endl;
-    std::cout << slice << std::endl;
-
-    //std::cout << "test_mat: " << std::endl;
-    //std::cout << test_mat << std::endl;
-
-    slice = GetMatrixSlice(&test_mat,0,2,2);
-    std::cout << "\n2x2 slice at 0,2" << std::endl;
-    std::cout << slice << std::endl;
+    for (int i = 0; i < test_mat.rows; ++i) {
+        for (int j = 0; j < test_mat.cols; ++j) {
+            cv::Mat slice = GetMatrixSlice(&test_mat,i,j,2);
+            //std::cout << "\n2x2 slice at " << i << "," << j << std::endl;
+            std::cout << slice << std::endl;
+        }
+    }
 }
 } // namespace
