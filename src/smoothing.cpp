@@ -15,6 +15,8 @@ bool MeanSmoothing(cv::Mat* src_image) {
     //cv::waitKey(0);
     //cv::imwrite( "../../data/padded.tif", padded_image);
 
+    // TODO check with values in slides to make sure
+
     return true;
 }
 
@@ -51,5 +53,106 @@ cv::Mat PadMatrix(const cv::Mat* src_image) {
     //std::cout << padded_image << std::endl;
 
     return padded_image;
+}
+
+cv::Mat GetMatrixSlice(const cv::Mat* src_image, int row, int col, int kernel_size) {
+    if (src_image == NULL) {
+        std::cout << "\nError (smoothing.cpp/GetMatrixSlice): " << std::endl;
+        std::cout << "\tPassed image was null" << std::endl;
+        return cv::Mat();
+    }
+
+    // check coordinates and kernel size
+    if (row > src_image->rows || col > src_image->cols) {
+        std::cout << "\nError (smoothing.cpp/GetMatrixSlice): " << std::endl;
+        std::cout << "\tRequested coordinates out of bounds" << std::endl;
+        return cv::Mat();
+    }
+
+    if (kernel_size <= 0) {
+        std::cout << "\nError (smoothing.cpp/GetMatrixSlice): " << std::endl;
+        std::cout << "\tKernel size must be greater than 0" << std::endl;
+        return cv::Mat();
+    }
+
+    if (kernel_size * kernel_size > src_image->rows * src_image->cols) {
+        std::cout << "\nError (smoothing.cpp/GetMatrixSlice): " << std::endl;
+        std::cout << "\tKernel size larger than source size" << std::endl;
+        return cv::Mat();
+    }
+
+    if (row + kernel_size > src_image->rows || col + kernel_size > src_image->cols) {
+        std::cout << "\nError (smoothing.cpp/GetMatrixSlice): " << std::endl;
+        std::cout << "\tRequested coordinate cannot generate a slice" << std::endl;
+        return cv::Mat();
+    }
+
+    // generate slice matrix and load data from source image
+    cv::Mat mat_slice = cv::Mat::Mat(kernel_size, kernel_size, CV_8UC1);
+
+    /* for  0,1 with k_size 2
+     * want r c want k j
+            0,1      0,0
+            0,2      0,1
+            1,1      1,0
+            1,2      1,1 */
+    // k,j are the row/col for the slice matrix
+    int k = 0, j = 0;
+    for (int r = row; r < (row + kernel_size); ++r, ++k) {
+        if (k == kernel_size) {
+            k = 0;
+        }
+        for (int c = col; c < (col + kernel_size); ++c, ++j) {
+            if (j == kernel_size) {
+                j = 0;
+            }
+            //std::cout << "r,c :: j,k -> " << r << "," << c << " :: " << j << "," << k << std::endl;
+            mat_slice.at<uchar>(k,j) = (uchar) src_image->at<uchar>(r,c);
+        }
+    }
+
+    return mat_slice;
+}
+
+void TEST_GetMatrixSlice() {
+    std::cout << "\n===================" << std::endl;
+    std::cout << "TEST_GetMatrixSlice" << std::endl;
+    std::cout << "===================" << std::endl;
+
+    cv::Mat test_mat = cv::Mat::Mat(3, 3, CV_8UC1);
+
+    /* 1 2 3
+       4 2 4
+       5 7 9 */
+    test_mat.at<uchar>(0,0) = (uchar) 1;
+    test_mat.at<uchar>(0,1) = (uchar) 2;
+    test_mat.at<uchar>(0,2) = (uchar) 3;
+    test_mat.at<uchar>(1,0) = (uchar) 4;
+    test_mat.at<uchar>(1,1) = (uchar) 2;
+    test_mat.at<uchar>(1,2) = (uchar) 4;
+    test_mat.at<uchar>(2,0) = (uchar) 5;
+    test_mat.at<uchar>(2,1) = (uchar) 7;
+    test_mat.at<uchar>(2,2) = (uchar) 9;
+
+    std::cout << "test_mat: " << std::endl;
+    std::cout << test_mat << std::endl;
+
+    cv::Mat slice = GetMatrixSlice(&test_mat,0,0,2);
+    std::cout << "\n2x2 slice at 0,0" << std::endl;
+    std::cout << slice << std::endl;
+
+    //std::cout << "test_mat: " << std::endl;
+    //std::cout << test_mat << std::endl;
+
+    slice = GetMatrixSlice(&test_mat,0,1,2);
+    std::cout << "\n2x2 slice at 0,1" << std::endl;
+    std::cout << slice << std::endl;
+
+    //std::cout << "test_mat: " << std::endl;
+    //std::cout << test_mat << std::endl;
+
+    slice = GetMatrixSlice(&test_mat,0,2,2);
+    std::cout << "\n2x2 slice at 0,2" << std::endl;
+    std::cout << slice << std::endl;
 }
 } // namespace

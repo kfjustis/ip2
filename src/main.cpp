@@ -38,6 +38,10 @@ int main(int argc, char** argv) {
 		case 3:
 			std::cout << "\nMedian filter not supported yet." << std::endl;
 			break;
+		case 4:
+			std::cout << "\nRunning tests..." << std::endl;
+			ip2::TEST_GetMatrixSlice();
+			break;
 		default:
 			std::cout << "\nError (main.cpp): " << std::endl;
 			std::cout << "\tInvalid filter case" << std::endl;

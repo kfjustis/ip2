@@ -20,4 +20,14 @@ bool MeanSmoothing(cv::Mat* src_image);
  */
 cv::Mat PadMatrix(const cv::Mat* src_image);
 
+/*
+ * Takes a given matrix and upper left coordinate for a region slice.
+ * From that coordinate, a new matrix is generated with the same
+ * data as the region with dimensions equal to the kernel so that
+ * operations can be performed, such as MeanSmoothing(). The resulting matrix
+ * that gets returned is the region slice with the same data as the source matrix.
+ */
+cv::Mat GetMatrixSlice(const cv::Mat* src_image, int row, int col, int kernel_size);
+void TEST_GetMatrixSlice();
+
 } // namespace
