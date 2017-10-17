@@ -17,6 +17,14 @@ bool MeanSmoothing(cv::Mat* src_image) {
 
     // TODO check with values in slides to make sure
 
+    /* for each index of the matrix (the inner part of the padded matrix)
+        grab a slice the size of the kernel
+        perform the average calculation and replace the data
+        write the slice into a new matrix?
+        display the image
+        wait key
+    */
+
     return true;
 }
 
