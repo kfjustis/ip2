@@ -170,13 +170,18 @@ cv::Mat GetMatrixSlice(const cv::Mat* src_image, int row, int col, int kernel_si
             2,2*/
     // k,j are the row/col for the slice matrix
     int k = 0, j = 0;
-    for (int r = row; r < (row + kernel_size-1); ++r) {
-        for (int c = col; c < (col + kernel_size-1); ++c) {
+    for (int r = row; r < (row + kernel_size); ++r, ++k) {
+        if (k == kernel_size) {
+            k = 0;
+        }
+        for (int c = col; c < (col + kernel_size); ++c, ++j) {
+            if (j == kernel_size) {
+                j = 0;
+            }
             //std::cout << "r,c :: j,k -> " << r << "," << c << " :: " << j << "," << k << std::endl;
-            mat_slice.at<uchar>(r-2,c-2) = (uchar) src_image->at<uchar>(r,c);
+            mat_slice.at<uchar>(k,j) = (uchar) src_image->at<uchar>(r,c);
         }
     }
-
 
     return mat_slice;
 }
@@ -211,13 +216,13 @@ void TEST_GetMatrixSlice() {
     std::cout << "pad_test_mat: " << std::endl;
     std::cout << pad_test_mat << std::endl;
 
-    /*for (int i = 0; i < test_mat.rows; ++i) {
+    for (int i = 0; i < test_mat.rows; ++i) {
         for (int j = 0; j < test_mat.cols; ++j) {
-            cv::Mat slice = GetMatrixSlice(&test_mat,i,j,3);
-            //std::cout << "\n2x2 slice at " << i << "," << j << std::endl;
-            //std::cout << slice << std::endl;
+            cv::Mat slice = GetMatrixSlice(&pad_test_mat,i,j,3);
+            std::cout << "\nslice at " << i << "," << j << std::endl;
+            std::cout << slice << std::endl;
         }
-    }*/
+    }
 }
 
 bool MeanSmoothing(const cv::Mat* src_image) {
