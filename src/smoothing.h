@@ -13,7 +13,7 @@ namespace ip2 {
  * PARAMS: cv::Mat* src - reference to the source matrix (data gets overwritten, hence no const)
  * RETURN: bool - true on success, false on failure
  */
-int AverageMatrix(cv::Mat* src);
+int AverageMatrix(const cv::Mat* src);
 void TEST_AverageMatrix();
 
 /*
