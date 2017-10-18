@@ -41,9 +41,10 @@ void TEST_GetMatrixSlice();
 /*
  * Applies mean smoothing filter to the passed image.
  * PARAMS: cv::Mat* src_image - reference to source image data as an opencv matrix
+ *         unsigned int iterations - the number of times to run mean filter before showing image
  * RETURN: bool - true on success, false on failure
  */
-bool MeanSmoothing(const cv::Mat* src_image);
+bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations);
 void TEST_MeanSmoothing();
 
 /*

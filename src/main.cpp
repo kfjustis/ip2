@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
 	// apply filter
 	switch(filter_type) {
 		case 1:
-			if (ip2::MeanSmoothing(&src_image) == false) {
+			if (ip2::MeanSmoothing(&src_image, 50) == false) {
 				return -1;
 			} else {
 				std::cout << "\nMean smoothing success." << std::endl;
@@ -40,11 +40,11 @@ int main(int argc, char** argv) {
 			break;
 		case 4:
 			std::cout << "\nRunning tests..." << std::endl;
-			ip2::TEST_GetMatrixSlice();
+			//ip2::TEST_GetMatrixSlice();
 			//ip2::TEST_PadMatrix();
 			//ip2::TEST_CheckSliceDimensions();
 			//ip2::TEST_AverageMatrix();
-			//ip2::TEST_MeanSmoothing();
+			ip2::TEST_MeanSmoothing();
 			break;
 		default:
 			std::cout << "\nError (main.cpp): " << std::endl;

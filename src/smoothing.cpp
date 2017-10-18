@@ -225,21 +225,12 @@ void TEST_GetMatrixSlice() {
     }
 }
 
-bool MeanSmoothing(const cv::Mat* src_image) {
+bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations) {
     if (src_image == NULL) {
         std::cout << "\nError (smoothing.cpp/MeanSmoothing): " << std::endl;
         std::cout << "\tPassed image was null" << std::endl;
         return false;
     }
-
-    cv::Mat padded_image = PadMatrix(src_image);
-
-    //cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
-	//cv::imshow("Output images", padded_image);
-    //cv::waitKey(0);
-    //cv::imwrite( "../../data/padded.tif", padded_image);
-
-    // TODO check with values in slides to make sure
 
     /* for each index of the matrix (the inner part of the padded matrix)
         grab a slice the size of the kernel
@@ -249,40 +240,56 @@ bool MeanSmoothing(const cv::Mat* src_image) {
         wait key
     */
 
+    cv::Mat padded_image = PadMatrix(src_image);
     cv::Mat output, slice;
     int kernel_size = 3;
     output = src_image->clone();
-    // i,j always points to the center of the current slice with this indexing
-    for (int i = 1; i < padded_image.rows-2; ++i) {
-        for (int j = 1; j < padded_image.cols-2; ++j) {
-            slice = GetMatrixSlice(&padded_image, i-1, j-1, kernel_size);
-            //std::cout << "Printing current slice: " << std::endl << slice << std::endl;
-            if (AverageMatrix(&slice) == false) {
-                std::cout << "\nError (smoothing.cpp/MeanSmoothing): " << std::endl;
-                std::cout << "\tFailed to average during processing" << std::endl;
-                return false;
-            }
-            // write the updated slice to the output matrix
-            /* this indexing always points to the top left neighbor of the center of the current
-             * slice */
-            int m = 0, n = 0;
-            for (int k = i-1; k < slice.rows; ++k, ++m) {
-                if (m == slice.rows) {
-                    m = 0;
+
+    std::cout << "\nMessage (smoothing.cpp/MeanSmoothing): " << std::endl;
+    std::cout << "\tStart matrix:" << std::endl;
+    std::cout << *src_image << std::endl;
+
+    for (unsigned int loop = 0; loop < iterations; ++loop) {
+        // i,j always points to the upper left of the current slice with this indexing
+        for (int i = 0; i < padded_image.rows-kernel_size; ++i) {
+            for (int j = 0; j < padded_image.cols-kernel_size; ++j) {
+                slice = GetMatrixSlice(&padded_image, i, j, kernel_size);
+                if (AverageMatrix(&slice) == false) {
+                    std::cout << "\nError (smoothing.cpp/MeanSmoothing): " << std::endl;
+                    std::cout << "\tFailed to average during processing" << std::endl;
+                    return false;
                 }
-                for (int l = j-1; l < slice.cols; ++l, ++n) {
-                    if (n == slice.rows) {
-                        n = 0;
+                // write the updated slice to the output matrix
+                /* this indexing always points to the top left neighbor of the center of the current
+                 * slice */
+                int m = 0, n = 0;
+                for (int k = i+1; k < slice.rows; ++k, ++m) {
+                    if (m == slice.rows) {
+                        m = 0;
                     }
-                    output.at<uchar>(k,l) = (uchar) slice.at<uchar>(m,n);
+                    for (int l = j+1; l < slice.cols; ++l, ++n) {
+                        if (n == slice.rows) {
+                            n = 0;
+                        }
+                        output.at<uchar>(k,l) = (uchar) slice.at<uchar>(m,n);
+                    }
                 }
             }
         }
+
+        padded_image = PadMatrix(&output);
+        std::cout << "\nMessage (smoothing.cpp/MeanSmoothing): " << std::endl;
+        std::cout << "\tPadmat for next iter:" << std::endl;
+        std::cout << padded_image << std::endl;
     }
 
-    //std::cout << "\nMeanSmoothing before and after:" << std::endl;
+    std::cout << "\nMeanSmoothing before and after:" << std::endl;
     std::cout << *src_image << std::endl << std::endl;
     std::cout << output << std::endl;
+
+    //cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
+	//cv::imshow("Output image", output);
+    //cv::waitKey(0);
 
     return true;
 }
@@ -309,7 +316,10 @@ void TEST_MeanSmoothing() {
         std::cout << "\tTest failed. Could not generate padded matrix" << std::endl;
         return;
     } else {
-        MeanSmoothing(&test_mat);
+        std::cout << "\t1 iteration:" << std::endl;
+        MeanSmoothing(&test_mat, 1);
+        std::cout << "\t11 iterations:" << std::endl;
+        MeanSmoothing(&test_mat, 11);
         std::cout << "\nTest passed (smoothing.cpp/TEST_MeanSmoothing)" << std::endl;
         std::cout << "\tTest passed." << std::endl;
     }
