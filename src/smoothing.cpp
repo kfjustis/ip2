@@ -25,7 +25,7 @@ int AverageMatrix(const cv::Mat* src) {
     // calculate average
     double total = src->rows * src->cols;
     double average = round((double)(sum / total));
-    std::cout << "average was: " << average << std::endl;
+    //std::cout << "average was: " << average << std::endl;
 
     // replace center value with average
     //src->at<uchar>((int) src->rows/2, (int) src->cols/2) = (uchar) average;
@@ -254,23 +254,23 @@ bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations) {
 
     for (unsigned int loop = 0; loop < iterations; ++loop) {
         // i,j always points to the upper left of the current slice with this indexing
-        std::cout << "\nMessage (smoothing.cpp/MeanSmoothing): " << std::endl;
+        /*std::cout << "\nMessage (smoothing.cpp/MeanSmoothing): " << std::endl;
         std::cout << "\tPadded image before slicing:" << std::endl;
-        std::cout << padded_image << std::endl;
+        std::cout << padded_image << std::endl;*/
         for (int i = 0; i < padded_image.rows-kernel_size+1; ++i) {
             for (int j = 0; j < padded_image.cols-kernel_size+1; ++j) {
                 slice = GetMatrixSlice(&padded_image, i, j, kernel_size);
-                //std::cout << "Current slice:" << std::endl;
-                //std::cout << slice << std::endl;
                 if ((average = AverageMatrix(&slice)) == -1) {
                     std::cout << "\nError (smoothing.cpp/MeanSmoothing): " << std::endl;
                     std::cout << "\tFailed to average during processing" << std::endl;
                     return false;
                 }
-                std::cout << "average: " << average << std::endl;
+                //std::cout << "average: " << average << std::endl;
                 output.at<uchar>(i,j) = (uchar) average;
             }
         }
+        // setup padded_image for next iteration
+        padded_image = PadMatrix(&output);
     }
 
     std::cout << "\nMeanSmoothing before and after:" << std::endl;
@@ -344,11 +344,11 @@ void TEST_MeanSmoothing() {
         std::cout << "\n1 iteration:" << std::endl;
         std::cout << "-----------------------------" << std::endl;
         MeanSmoothing(&test_mat, 1);
-        /*std::cout << "\n3 iterations:" << std::endl;
+        std::cout << "\n\n\n10 iterations:" << std::endl;
         std::cout << "-----------------------------" << std::endl;
-        MeanSmoothing(&test_mat, 3);
+        MeanSmoothing(&test_mat, 10);
         std::cout << "\nTest passed (smoothing.cpp/TEST_MeanSmoothing)" << std::endl;
-        std::cout << "\tTest passed." << std::endl;*/
+        std::cout << "\tTest passed." << std::endl;
     }
 }
 
