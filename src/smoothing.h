@@ -50,7 +50,7 @@ void TEST_MeanSmoothing();
 /*
  * Takes a given matrix and returns the same matrix padded with zeros.
  * PARAMS: const cv::Mat* src_image - reference to souce image data as an opencv matrix
- * RETURN: a new Mat reference with padded zeros, NULL on failure
+ * RETURN: a new Mat reference with padded zeros, empty matrix on failure
  */
 cv::Mat PadMatrix(const cv::Mat* src_image);
 void TEST_PadMatrix();

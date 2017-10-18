@@ -23,8 +23,9 @@ bool AverageMatrix(cv::Mat* src) {
     }
 
     // calculate average
-    int total = src->rows * src->cols;
-    int average = sum / total;
+    double total = src->rows * src->cols;
+    double average = round((double)(sum / total));
+    std::cout << "average was: " << average << std::endl;
 
     // replace center value with average
     src->at<uchar>((int) src->rows/2, (int) src->cols/2) = (uchar) average;
@@ -246,19 +247,27 @@ bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations) {
     output = src_image->clone();
 
     std::cout << "\nMessage (smoothing.cpp/MeanSmoothing): " << std::endl;
+    std::cout << "\tRequested loop iterations: " << iterations << std::endl;
     std::cout << "\tStart matrix:" << std::endl;
     std::cout << *src_image << std::endl;
 
     for (unsigned int loop = 0; loop < iterations; ++loop) {
         // i,j always points to the upper left of the current slice with this indexing
-        for (int i = 0; i < padded_image.rows-kernel_size; ++i) {
-            for (int j = 0; j < padded_image.cols-kernel_size; ++j) {
+        std::cout << "\nMessage (smoothing.cpp/MeanSmoothing): " << std::endl;
+        std::cout << "\tPadded image before slicing:" << std::endl;
+        std::cout << padded_image << std::endl;
+        for (int i = 0; i < padded_image.rows-kernel_size+1; ++i) {
+            for (int j = 0; j < padded_image.cols-kernel_size+1; ++j) {
                 slice = GetMatrixSlice(&padded_image, i, j, kernel_size);
+                //std::cout << "Current slice:" << std::endl;
+                //std::cout << slice << std::endl;
                 if (AverageMatrix(&slice) == false) {
                     std::cout << "\nError (smoothing.cpp/MeanSmoothing): " << std::endl;
                     std::cout << "\tFailed to average during processing" << std::endl;
                     return false;
                 }
+                //std::cout << "Current slice after average:" << std::endl;
+                //std::cout << slice << std::endl;
                 // write the updated slice to the output matrix
                 /* this indexing always points to the top left neighbor of the center of the current
                  * slice */
@@ -278,9 +287,9 @@ bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations) {
         }
 
         padded_image = PadMatrix(&output);
-        std::cout << "\nMessage (smoothing.cpp/MeanSmoothing): " << std::endl;
-        std::cout << "\tPadmat for next iter:" << std::endl;
-        std::cout << padded_image << std::endl;
+        //std::cout << "\nMessage (smoothing.cpp/MeanSmoothing): " << std::endl;
+        //std::cout << "\tPadmat for iter:" << loop << std::endl;
+        //std::cout << padded_image << std::endl;
     }
 
     std::cout << "\nMeanSmoothing before and after:" << std::endl;
@@ -295,20 +304,55 @@ bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations) {
 }
 
 void TEST_MeanSmoothing() {
-    cv::Mat test_mat = cv::Mat::Mat(3, 3, CV_8UC1);
+    cv::Mat test_mat = cv::Mat::Mat(6, 6, CV_8UC1);
 
-    /* 1 2 3
-       4 2 4
-       5 7 9 */
+    /* 1 4 0 1 3 1
+       2 2 4 2 2 3
+       1 0 1 0 1 0
+       1 2 1 0 2 2
+       2 5 3 1 2 5
+       1 1 4 2 3 0 */
     test_mat.at<uchar>(0,0) = (uchar) 1;
-    test_mat.at<uchar>(0,1) = (uchar) 2;
-    test_mat.at<uchar>(0,2) = (uchar) 3;
-    test_mat.at<uchar>(1,0) = (uchar) 4;
+    test_mat.at<uchar>(0,1) = (uchar) 4;
+    test_mat.at<uchar>(0,2) = (uchar) 0;
+    test_mat.at<uchar>(0,3) = (uchar) 1;
+    test_mat.at<uchar>(0,4) = (uchar) 3;
+    test_mat.at<uchar>(0,5) = (uchar) 1;
+
+    test_mat.at<uchar>(1,0) = (uchar) 2;
     test_mat.at<uchar>(1,1) = (uchar) 2;
     test_mat.at<uchar>(1,2) = (uchar) 4;
-    test_mat.at<uchar>(2,0) = (uchar) 5;
-    test_mat.at<uchar>(2,1) = (uchar) 7;
-    test_mat.at<uchar>(2,2) = (uchar) 9;
+    test_mat.at<uchar>(1,3) = (uchar) 2;
+    test_mat.at<uchar>(1,4) = (uchar) 2;
+    test_mat.at<uchar>(1,5) = (uchar) 3;
+
+    test_mat.at<uchar>(2,0) = (uchar) 1;
+    test_mat.at<uchar>(2,1) = (uchar) 0;
+    test_mat.at<uchar>(2,2) = (uchar) 1;
+    test_mat.at<uchar>(2,3) = (uchar) 0;
+    test_mat.at<uchar>(2,4) = (uchar) 1;
+    test_mat.at<uchar>(2,5) = (uchar) 0;
+
+    test_mat.at<uchar>(3,0) = (uchar) 1;
+    test_mat.at<uchar>(3,1) = (uchar) 2;
+    test_mat.at<uchar>(3,2) = (uchar) 1;
+    test_mat.at<uchar>(3,3) = (uchar) 0;
+    test_mat.at<uchar>(3,4) = (uchar) 2;
+    test_mat.at<uchar>(3,5) = (uchar) 2;
+
+    test_mat.at<uchar>(4,0) = (uchar) 2;
+    test_mat.at<uchar>(4,1) = (uchar) 5;
+    test_mat.at<uchar>(4,2) = (uchar) 3;
+    test_mat.at<uchar>(4,3) = (uchar) 1;
+    test_mat.at<uchar>(4,4) = (uchar) 2;
+    test_mat.at<uchar>(4,5) = (uchar) 5;
+
+    test_mat.at<uchar>(5,0) = (uchar) 1;
+    test_mat.at<uchar>(5,1) = (uchar) 1;
+    test_mat.at<uchar>(5,2) = (uchar) 4;
+    test_mat.at<uchar>(5,3) = (uchar) 2;
+    test_mat.at<uchar>(5,4) = (uchar) 3;
+    test_mat.at<uchar>(5,5) = (uchar) 0;
 
     cv::Mat test_padded = PadMatrix(&test_mat);
     if (test_padded.empty() == true) {
@@ -316,12 +360,14 @@ void TEST_MeanSmoothing() {
         std::cout << "\tTest failed. Could not generate padded matrix" << std::endl;
         return;
     } else {
-        std::cout << "\t1 iteration:" << std::endl;
+        std::cout << "\n1 iteration:" << std::endl;
+        std::cout << "-----------------------------" << std::endl;
         MeanSmoothing(&test_mat, 1);
-        std::cout << "\t11 iterations:" << std::endl;
-        MeanSmoothing(&test_mat, 11);
+        /*std::cout << "\n3 iterations:" << std::endl;
+        std::cout << "-----------------------------" << std::endl;
+        MeanSmoothing(&test_mat, 3);
         std::cout << "\nTest passed (smoothing.cpp/TEST_MeanSmoothing)" << std::endl;
-        std::cout << "\tTest passed." << std::endl;
+        std::cout << "\tTest passed." << std::endl;*/
     }
 }
 
