@@ -52,5 +52,6 @@ void TEST_MeanSmoothing();
  * RETURN: a new Mat reference with padded zeros, NULL on failure
  */
 cv::Mat PadMatrix(const cv::Mat* src_image);
+void TEST_PadMatrix();
 
 } // namespace

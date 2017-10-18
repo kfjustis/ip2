@@ -344,4 +344,43 @@ cv::Mat PadMatrix(const cv::Mat* src_image) {
 
     return padded_image;
 }
+
+void TEST_PadMatrix() {
+    std::cout << "\n===================" << std::endl;
+    std::cout << "TEST_PadMatrix" << std::endl;
+    std::cout << "===================" << std::endl;
+
+    cv::Mat test_mat2 = cv::Mat::Mat(2, 2, CV_8UC1);
+    /* 1 2
+       3 4 */
+    test_mat2.at<uchar>(0,0) = (uchar) 1;
+    test_mat2.at<uchar>(0,1) = (uchar) 2;
+    test_mat2.at<uchar>(1,0) = (uchar) 3;
+    test_mat2.at<uchar>(1,1) = (uchar) 4;
+
+    std::cout << "test_mat 2x2: " << std::endl;
+    std::cout << test_mat2 << std::endl;
+
+    cv::Mat pad2 = PadMatrix(&test_mat2);
+    std::cout << "padded test_mat 2x2: " << std::endl;
+    std::cout << pad2 << std::endl;
+
+    cv::Mat test_mat3 = cv::Mat::Mat(3, 3, CV_8UC1);
+    /* 1 2 3
+       4 2 4
+       5 7 9 */
+    test_mat3.at<uchar>(0,0) = (uchar) 1;
+    test_mat3.at<uchar>(0,1) = (uchar) 2;
+    test_mat3.at<uchar>(0,2) = (uchar) 3;
+    test_mat3.at<uchar>(1,0) = (uchar) 4;
+    test_mat3.at<uchar>(1,1) = (uchar) 2;
+    test_mat3.at<uchar>(1,2) = (uchar) 4;
+    test_mat3.at<uchar>(2,0) = (uchar) 5;
+    test_mat3.at<uchar>(2,1) = (uchar) 7;
+    test_mat3.at<uchar>(2,2) = (uchar) 9;
+
+    std::cout << "\ntest_mat 3x3: " << std::endl;
+    std::cout << test_mat3 << std::endl;
+
+}
 } // namespace
