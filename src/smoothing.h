@@ -44,6 +44,7 @@ void TEST_GetMatrixSlice();
  * RETURN: bool - true on success, false on failure
  */
 bool MeanSmoothing(const cv::Mat* src_image);
+void TEST_MeanSmoothing();
 
 /*
  * Takes a given matrix and returns the same matrix padded with zeros.

@@ -40,9 +40,10 @@ int main(int argc, char** argv) {
 			break;
 		case 4:
 			std::cout << "\nRunning tests..." << std::endl;
-			//ip2::TEST_GetMatrixSlice();
+			ip2::TEST_GetMatrixSlice();
 			//ip2::TEST_CheckSliceDimensions();
-			ip2::TEST_AverageMatrix();
+			//ip2::TEST_AverageMatrix();
+			//ip2::TEST_MeanSmoothing();
 			break;
 		default:
 			std::cout << "\nError (main.cpp): " << std::endl;

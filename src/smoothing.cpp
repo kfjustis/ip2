@@ -130,7 +130,7 @@ cv::Mat GetMatrixSlice(const cv::Mat* src_image, int row, int col, int kernel_si
         return cv::Mat();
     }
 
-    if (row + kernel_size > src_image->rows || col + kernel_size > src_image->cols) {
+    if (row + kernel_size-1 > src_image->rows || col + kernel_size-1 > src_image->cols) {
         std::cout << "\nError (smoothing.cpp/GetMatrixSlice): " << std::endl;
         std::cout << "\tRequested coordinate cannot generate a full slice" << std::endl;
         return cv::Mat();
@@ -139,26 +139,44 @@ cv::Mat GetMatrixSlice(const cv::Mat* src_image, int row, int col, int kernel_si
     // generate slice matrix and load data from source image
     cv::Mat mat_slice = cv::Mat::Mat(kernel_size, kernel_size, CV_8UC1);
 
+    if (kernel_size * kernel_size == src_image->rows * src_image-> cols) {
+        mat_slice = src_image->clone();
+        return mat_slice;
+    } else {
+        /*std::cout << "\nMessage (smoothing.cpp/GetMatrixSlice): " << std::endl;
+        std::cout << "\tkernel_size: " << kernel_size << std::endl;
+        std::cout << "\tsrc_rows: " << src_image->rows << std::endl;
+        std::cout << "\tsrc_cols: " << src_image->cols << std::endl;
+        return cv::Mat();*/
+    }
+
     /* for  0,1 with k_size 2
      * want r c want k j
             0,1      0,0
             0,2      0,1
             1,1      1,0
-            1,2      1,1 */
+            1,2      1,1
+
+       for 0,0 with k_size 3
+     * want r c want k j
+            0,0
+            0,1
+            0,2
+            1,0
+            1,1
+            1,2
+            2,0
+            2,1
+            2,2*/
     // k,j are the row/col for the slice matrix
     int k = 0, j = 0;
-    for (int r = row; r < (row + kernel_size); ++r, ++k) {
-        if (k == kernel_size) {
-            k = 0;
-        }
-        for (int c = col; c < (col + kernel_size); ++c, ++j) {
-            if (j == kernel_size) {
-                j = 0;
-            }
+    for (int r = row; r < (row + kernel_size-1); ++r) {
+        for (int c = col; c < (col + kernel_size-1); ++c) {
             //std::cout << "r,c :: j,k -> " << r << "," << c << " :: " << j << "," << k << std::endl;
-            mat_slice.at<uchar>(k,j) = (uchar) src_image->at<uchar>(r,c);
+            mat_slice.at<uchar>(r-2,c-2) = (uchar) src_image->at<uchar>(r,c);
         }
     }
+
 
     return mat_slice;
 }
@@ -186,13 +204,20 @@ void TEST_GetMatrixSlice() {
     std::cout << "test_mat: " << std::endl;
     std::cout << test_mat << std::endl;
 
-    for (int i = 0; i < test_mat.rows; ++i) {
+    cv::Mat slice = GetMatrixSlice(&test_mat,0,0,3);
+    std::cout << "3x3 with ks 3: " << std::endl << test_mat << std::endl;
+
+    cv::Mat pad_test_mat = PadMatrix(&test_mat);
+    std::cout << "pad_test_mat: " << std::endl;
+    std::cout << pad_test_mat << std::endl;
+
+    /*for (int i = 0; i < test_mat.rows; ++i) {
         for (int j = 0; j < test_mat.cols; ++j) {
-            cv::Mat slice = GetMatrixSlice(&test_mat,i,j,2);
+            cv::Mat slice = GetMatrixSlice(&test_mat,i,j,3);
             //std::cout << "\n2x2 slice at " << i << "," << j << std::endl;
-            std::cout << slice << std::endl;
+            //std::cout << slice << std::endl;
         }
-    }
+    }*/
 }
 
 bool MeanSmoothing(const cv::Mat* src_image) {
@@ -219,15 +244,70 @@ bool MeanSmoothing(const cv::Mat* src_image) {
         wait key
     */
 
-    cv::Mat slice;
+    cv::Mat output, slice;
     int kernel_size = 3;
-    for (int i = 0; i < padded_image.rows; ++i) {
-        for (int j = 0; j < padded_image.cols; ++j) {
-            slice = GetMatrixSlice(&padded_image, i, j, kernel_size);
+    output = src_image->clone();
+    // i,j always points to the center of the current slice with this indexing
+    for (int i = 1; i < padded_image.rows-2; ++i) {
+        for (int j = 1; j < padded_image.cols-2; ++j) {
+            slice = GetMatrixSlice(&padded_image, i-1, j-1, kernel_size);
+            //std::cout << "Printing current slice: " << std::endl << slice << std::endl;
+            if (AverageMatrix(&slice) == false) {
+                std::cout << "\nError (smoothing.cpp/MeanSmoothing): " << std::endl;
+                std::cout << "\tFailed to average during processing" << std::endl;
+                return false;
+            }
+            // write the updated slice to the output matrix
+            /* this indexing always points to the top left neighbor of the center of the current
+             * slice */
+            int m = 0, n = 0;
+            for (int k = i-1; k < slice.rows; ++k, ++m) {
+                if (m == slice.rows) {
+                    m = 0;
+                }
+                for (int l = j-1; l < slice.cols; ++l, ++n) {
+                    if (n == slice.rows) {
+                        n = 0;
+                    }
+                    output.at<uchar>(k,l) = (uchar) slice.at<uchar>(m,n);
+                }
+            }
         }
     }
 
+    //std::cout << "\nMeanSmoothing before and after:" << std::endl;
+    std::cout << *src_image << std::endl << std::endl;
+    std::cout << output << std::endl;
+
     return true;
+}
+
+void TEST_MeanSmoothing() {
+    cv::Mat test_mat = cv::Mat::Mat(3, 3, CV_8UC1);
+
+    /* 1 2 3
+       4 2 4
+       5 7 9 */
+    test_mat.at<uchar>(0,0) = (uchar) 1;
+    test_mat.at<uchar>(0,1) = (uchar) 2;
+    test_mat.at<uchar>(0,2) = (uchar) 3;
+    test_mat.at<uchar>(1,0) = (uchar) 4;
+    test_mat.at<uchar>(1,1) = (uchar) 2;
+    test_mat.at<uchar>(1,2) = (uchar) 4;
+    test_mat.at<uchar>(2,0) = (uchar) 5;
+    test_mat.at<uchar>(2,1) = (uchar) 7;
+    test_mat.at<uchar>(2,2) = (uchar) 9;
+
+    cv::Mat test_padded = PadMatrix(&test_mat);
+    if (test_padded.empty() == true) {
+        std::cout << "\nError (smoothing.cpp/TEST_MeanSmoothing)" << std::endl;
+        std::cout << "\tTest failed. Could not generate padded matrix" << std::endl;
+        return;
+    } else {
+        MeanSmoothing(&test_mat);
+        std::cout << "\nTest passed (smoothing.cpp/TEST_MeanSmoothing)" << std::endl;
+        std::cout << "\tTest passed." << std::endl;
+    }
 }
 
 cv::Mat PadMatrix(const cv::Mat* src_image) {
@@ -256,10 +336,10 @@ cv::Mat PadMatrix(const cv::Mat* src_image) {
         }
     }
 
-    std::cout << "\nOld rows: " << src_image->rows << std::endl;
-    std::cout << "Old cols: " << src_image->cols << std::endl;
-    std::cout << "New rows: " << padded_image.rows << std::endl;
-    std::cout << "New cols: " << padded_image.cols << std::endl;
+    //std::cout << "\nOld rows: " << src_image->rows << std::endl;
+    //std::cout << "Old cols: " << src_image->cols << std::endl;
+    //std::cout << "New rows: " << padded_image.rows << std::endl;
+    //std::cout << "New cols: " << padded_image.cols << std::endl;
     //std::cout << padded_image << std::endl;
 
     return padded_image;
