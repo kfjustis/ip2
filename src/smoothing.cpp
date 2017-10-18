@@ -331,7 +331,7 @@ cv::Mat PadMatrix(const cv::Mat* src_image) {
             } else if (row == padded_image.rows-1 || col == padded_image.cols-1) {
                 padded_image.at<uchar>(row, col) = (uchar) 0;
             } else {
-                padded_image.at<uchar>(row, col) = (uchar) src_image->at<uchar>(row, col);
+                padded_image.at<uchar>(row, col) = (uchar) src_image->at<uchar>(row-1, col-1);
             }
         }
     }
@@ -381,6 +381,10 @@ void TEST_PadMatrix() {
 
     std::cout << "\ntest_mat 3x3: " << std::endl;
     std::cout << test_mat3 << std::endl;
+
+    cv::Mat pad3 = PadMatrix(&test_mat3);
+    std::cout << "padded test_mat 3x3: " << std::endl;
+    std::cout << pad3 << std::endl;
 
 }
 } // namespace
