@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 			if (ip2::MeanSmoothing(&src_image, 50) == false) {
 				return -1;
 			} else {
-				std::cout << "\nMean smoothing success." << std::endl;
+				std::cout << "\nMean smoothing success.\n" << std::endl;
 				break;
 			}
 		case 2:
@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
 			//ip2::TEST_PadMatrix();
 			//ip2::TEST_CheckSliceDimensions();
 			//ip2::TEST_AverageMatrix();
-			ip2::TEST_MeanSmoothing();
+			//ip2::TEST_MeanSmoothing();
 			break;
 		default:
 			std::cout << "\nError (main.cpp): " << std::endl;

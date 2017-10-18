@@ -247,10 +247,10 @@ bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations) {
     int average = -2;
     output = src_image->clone();
 
-    std::cout << "\nMessage (smoothing.cpp/MeanSmoothing): " << std::endl;
+    /*std::cout << "\nMessage (smoothing.cpp/MeanSmoothing): " << std::endl;
     std::cout << "\tRequested loop iterations: " << iterations << std::endl;
     std::cout << "\tStart matrix:" << std::endl;
-    std::cout << *src_image << std::endl;
+    std::cout << *src_image << std::endl;*/
 
     for (unsigned int loop = 0; loop < iterations; ++loop) {
         // i,j always points to the upper left of the current slice with this indexing
@@ -273,13 +273,13 @@ bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations) {
         padded_image = PadMatrix(&output);
     }
 
-    std::cout << "\nMeanSmoothing before and after:" << std::endl;
+    /*std::cout << "\nMeanSmoothing before and after:" << std::endl;
     std::cout << *src_image << std::endl << std::endl;
-    std::cout << output << std::endl;
+    std::cout << output << std::endl;*/
 
-    //cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
-	//cv::imshow("Output image", output);
-    //cv::waitKey(0);
+    cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
+	cv::imshow("Output image", output);
+    cv::waitKey(0);
 
     return true;
 }
