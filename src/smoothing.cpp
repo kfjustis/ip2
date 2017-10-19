@@ -339,6 +339,8 @@ void TEST_MeanSmoothing() {
     if (test_padded.empty() == true) {
         std::cout << "\nError (smoothing.cpp/TEST_MeanSmoothing)" << std::endl;
         std::cout << "\tTest failed. Could not generate padded matrix" << std::endl;
+        test_mat.release();
+        test_padded.release();
         return;
     } else {
         std::cout << "\n1 iteration:" << std::endl;
@@ -350,6 +352,10 @@ void TEST_MeanSmoothing() {
         std::cout << "\nTest passed (smoothing.cpp/TEST_MeanSmoothing)" << std::endl;
         std::cout << "\tTest passed." << std::endl;
     }
+
+    // release
+    test_mat.release();
+    test_padded.release();
 }
 
 bool MedianSmoothing(const cv::Mat* src_image, unsigned int iterations) {
@@ -431,6 +437,12 @@ void TEST_PadMatrix() {
     cv::Mat pad3 = PadMatrix(&test_mat3);
     std::cout << "padded test_mat 3x3: " << std::endl;
     std::cout << pad3 << std::endl;
+
+    // release
+    test_mat2.release();
+    pad2.release();
+    test_mat3.release();
+    pad3.release();
 
 }
 } // namespace
