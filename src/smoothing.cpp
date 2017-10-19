@@ -352,6 +352,10 @@ void TEST_MeanSmoothing() {
     }
 }
 
+bool MedianSmoothing(const cv::Mat* src_image, unsigned int iterations) {
+    return false;
+}
+
 cv::Mat PadMatrix(const cv::Mat* src_image) {
     if (src_image == NULL) {
         std::cout << "\nError (smoothing.cpp/PadMatrix): " << std::endl;

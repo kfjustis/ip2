@@ -10,8 +10,8 @@ namespace ip2 {
 /*
  * Determines the average of the values in the matrix and replaces the middle with this average.
  * Dimensions must be square for this to work.
- * PARAMS: cv::Mat* src - reference to the source matrix (data gets overwritten, hence no const)
- * RETURN: bool - true on success, false on failure
+ * PARAMS: const cv::Mat* src - reference to the source matrix
+ * RETURN: int - the new center value for the matrix after averaging
  */
 int AverageMatrix(const cv::Mat* src);
 void TEST_AverageMatrix();
@@ -29,23 +29,32 @@ void TEST_CheckSliceDimensions();
  * data as the region with dimensions equal to the kernel so that
  * operations can be performed, such as MeanSmoothing(). The resulting matrix
  * that gets returned is the region slice with the same data as the source matrix.
- * PARAMS: cv::Mat* src_image - reference to source image data as an opencv matrix
+ * PARAMS: const cv::Mat* src_image - reference to source image data as an opencv matrix
  *         int row - the top-left row coordinate for desired slice region
  *         int col - the top-left col coordinate for desired slice region
  *         int kernel_size - the dimension of the kernel (will be squared)
- * RETURN: bool - true on success, false on failure
+ * RETURN: cv::Mat - the matrix containing the requested slice, empty matrix on failure
  */
 cv::Mat GetMatrixSlice(const cv::Mat* src_image, int row, int col, int kernel_size);
 void TEST_GetMatrixSlice();
 
 /*
  * Applies mean smoothing filter to the passed image.
- * PARAMS: cv::Mat* src_image - reference to source image data as an opencv matrix
- *         unsigned int iterations - the number of times to run mean filter before showing image
+ * PARAMS: const cv::Mat* src_image - reference to source image data as an opencv matrix
+ *         unsigned int iterations - the number of times to apply mean filter before showing image
  * RETURN: bool - true on success, false on failure
  */
 bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations);
 void TEST_MeanSmoothing();
+
+/*
+ * Applies median smoothing filter to the passed image.
+ * PARAMS: const cv::Mat* src_image - reference to source image data as an opencv matrix
+ *         unsigned int iterations - the number of times to apply median filter before showing image
+ * RETURN: bool - true on success, false on failure
+ */
+bool MedianSmoothing(const cv::Mat* src_image, unsigned int iterations);
+void TEST_MedianSmoothing();
 
 /*
  * Takes a given matrix and returns the same matrix padded with zeros.
