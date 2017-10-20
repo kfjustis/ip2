@@ -108,7 +108,103 @@ void TEST_CheckSliceDimensions() {
 }
 
 bool GaussianSmoothing(const cv::Mat* src_image, unsigned int sigma) {
-    return false;
+    if (src_image == NULL) {
+        std::cout << "\nError (smoothing.cpp/GaussianSmoothing): " << std::endl;
+        std::cout << "\tPassed image was null" << std::endl;
+        return false;
+    }
+
+    if (sigma == 0) {
+        std::cout << "\nError (smoothing.cpp/GaussianSmoothing): " << std::endl;
+        std::cout << "\tSigma cannot be 0" << std::endl;
+        return false;
+    }
+
+    cv::Mat padded_image = PadMatrix(src_image);
+    cv::Mat slice, output;
+    int kernel_size = 3;
+    output = src_image->clone();
+
+    double x = 1.0;
+    double y = 1.0;
+    double x_2 = 1.0;
+    double y_2 = 1.0;
+    double sig_2 = 1.0;
+    double value = 1.0;
+    int temp_pixel = 0;
+
+    for (int i = 0; i < padded_image.rows-kernel_size+1; ++i) {
+        for (int j = 0; j < padded_image.cols-kernel_size+1; ++j) {
+            slice = GetMatrixSlice(&padded_image, i, j, kernel_size);
+
+            /*std::cout << "\nMessage (smoothing.cpp/GaussianSmoothing): " << std::endl;
+            std::cout << "\toriginal slice: " << std::endl << slice << std::endl;*/
+
+            // calculate kernel values and apply to slice (they have same indices)
+            for (int k = 0; k < slice.rows; ++k) {
+                for (int l = 0; l < slice.cols; ++l) {
+                    x = (double)(k+1-2);
+                    y = (double)(l+1-2);
+                    x_2 = pow(x, 2.0);
+                    y_2 = pow(y, 2.0);
+                    sig_2 = pow((double)sigma, 2.0);
+                    //std::cout << "\tx_2 was: " << x_2 << std::endl;
+                    //std::cout << "\ty_2 was: " << y_2 << std::endl;
+                    //std::cout << "\tsig_2 was: " << sig_2 << std::endl;
+                    // this is from Assignment 2 Q&A slides
+                    value = (1.0/(2*3.14159*sig_2)) * exp(-((x_2+y_2)/(2*sig_2)));
+                    //std::cout << "\tvalue was: " << sig_2 << std::endl;
+                    temp_pixel = (slice.at<uchar>(k,l) * value);
+                    //std::cout << "\tpixel was: " << pixel << std::endl;
+                    if (temp_pixel > 255) {
+                        temp_pixel = 255;
+                    } else if (temp_pixel < 0) {
+                        temp_pixel = 0;
+                    }
+                    slice.at<uchar>(k,l) = (uchar) temp_pixel;
+                    output.at<uchar>(i+k,j+l) = (uchar) slice.at<uchar>(k,l) * 25;
+                }
+            }
+
+            /*std::cout << "\nMessage (smoothing.cpp/GaussianSmoothing): " << std::endl;
+            std::cout << "\tgaussian slice: " << std::endl << slice << std::endl;*/
+
+            /*if ((average = AverageMatrix(&slice)) == -1) {
+                std::cout << "\nError (smoothing.cpp/MeanSmoothing): " << std::endl;
+                std::cout << "\tFailed to average during processing" << std::endl;
+                return false;
+            }
+            //std::cout << "average: " << average << std::endl;
+            output.at<uchar>(i,j) = (uchar) average;*/
+
+            // calculate kernel value from slides
+            /*x_2 = pow((double)i, 2.0);
+            y_2 = pow((double)j, 2.0);
+            sig_2 = pow((double)sigma, 2.0);
+            value = (double)-((x_2 + y_2)/(2.0 * sig_2));
+            pixel = exp(value);
+
+            std::cout << "\nMessage (smoothing.cpp/GaussianSmoothing): " << std::endl;
+            std::cout << "\tx_2 was: " << x_2 << std::endl;
+            std::cout << "\ty_2 was: " << y_2 << std::endl;
+            std::cout << "\tsig_2 was: " << sig_2 << std::endl;
+            std::cout << "\tvalue was: " << value << std::endl;
+            std::cout << "\tpixel was: " << pixel << std::endl;*/
+
+            // store in the output matrix
+            //output.at<uchar>(i,j) = (uchar) ((int)pixel);
+        }
+    }
+
+    cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
+	cv::imshow("Output image", output);
+    cv::waitKey(0);
+
+    padded_image.release();
+    slice.release();
+    output.release();
+
+    return true;
 }
 
 cv::Mat GetMatrixSlice(const cv::Mat* src_image, int row, int col, int kernel_size) {

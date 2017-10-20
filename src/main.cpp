@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
 				break;
 			}
 		case 2:
-			std::cout << "\nGaussian filter not supported yet." << std::endl;
+			std::cout << "\nProcessing image with gaussian filter with sigma " << data << " ..." << std::endl;
 			if (ip2::GaussianSmoothing(&src_image, data) == false) {
 				std::cout << "\nError (main.cpp): " << std::endl;
 				std::cout << "\tGaussian smoothing failed" << std::endl;
