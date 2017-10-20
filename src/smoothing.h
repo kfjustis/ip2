@@ -56,6 +56,8 @@ void TEST_GetMatrixSlice();
  * PARAMS: const cv::Mat* src_image - the matrix representing the source image
  *         unsigned int scalar - value that can be applied to the kernel for different results
  * RETURN: bool - true on success, false on failure
+ *
+ * SOURCE: https://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/filter_2d/filter_2d.html
  */
 bool ImageSharpen(const cv::Mat* src_image, unsigned int scalar);
 

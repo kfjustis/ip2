@@ -105,6 +105,9 @@ void TEST_CheckSliceDimensions() {
 
     std::cout << "test_mat passes: " << CheckSliceDimensions(&test_mat) << std::endl;
     std::cout << "test_bad_mat passes: " << CheckSliceDimensions(&test_bad_mat) << std::endl;
+
+    test_mat.release();
+    test_bad_mat.release();
 }
 
 bool GaussianSmoothing(const cv::Mat* src_image, unsigned int sigma) {
@@ -312,7 +315,7 @@ void TEST_GetMatrixSlice() {
     std::cout << "test_mat: " << std::endl;
     std::cout << test_mat << std::endl;
 
-    cv::Mat slice = GetMatrixSlice(&test_mat,0,0,3);
+    cv::Mat slice1 = GetMatrixSlice(&test_mat,0,0,3);
     std::cout << "3x3 with ks 3: " << std::endl << test_mat << std::endl;
 
     cv::Mat pad_test_mat = PadMatrix(&test_mat);
@@ -324,8 +327,13 @@ void TEST_GetMatrixSlice() {
             cv::Mat slice = GetMatrixSlice(&pad_test_mat,i,j,3);
             std::cout << "\nslice at " << i << "," << j << std::endl;
             std::cout << slice << std::endl;
+            slice.release();
         }
     }
+
+    test_mat.release();
+    slice1.release();
+    pad_test_mat.release();
 }
 
 bool ImageSharpen(const cv::Mat* src_image, unsigned int scalar) {
@@ -335,7 +343,33 @@ bool ImageSharpen(const cv::Mat* src_image, unsigned int scalar) {
         return false;
     }
 
+    // setup the convolution kernel
+    cv::Mat kernel = cv::Mat::Mat(3, 3, CV_8UC1);
+
+    /* 0 1 0
+       1 -4 1
+       0 1 0 */
+    kernel.at<uchar>(0,0) = (uchar) 0;
+    kernel.at<uchar>(0,1) = (uchar) 1;
+    kernel.at<uchar>(0,2) = (uchar) 0;
+    kernel.at<uchar>(1,0) = (uchar) 1;
+    kernel.at<uchar>(1,1) = (uchar) -4;
+    kernel.at<uchar>(1,2) = (uchar) 1;
+    kernel.at<uchar>(2,0) = (uchar) 0;
+    kernel.at<uchar>(2,1) = (uchar) 1;
+    kernel.at<uchar>(2,2) = (uchar) 0;
+
+    // the original matrix
+    cv::Mat original = src_image->clone();
+    // matrix after the filter is applied
+    cv::Mat after_filter = src_image->clone();
+    // matrix after the filtered matrix is subtracted from the original matrix (the result)
+    cv::Mat output = src_image->clone();
+
     // setup a lot of stuff for convolution and filter2D variables
+    //filter2D(src, dst, ddepth , kernel, anchor, delta, BORDER_DEFAULT);
+
+    kernel.release();
     return false;
 }
 
@@ -393,6 +427,10 @@ bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations) {
     cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
 	cv::imshow("Output image", output);
     cv::waitKey(0);
+
+    padded_image.release();
+    slice.release();
+    output.release();
 
     return true;
 }
@@ -626,6 +664,10 @@ bool MedianSmoothing(const cv::Mat* src_image, unsigned int iterations) {
 	cv::imshow("Output image", output);
     cv::waitKey(0);
 
+    padded_image.release();
+    slice.release();
+    output.release();
+
     return true;
 
 }
@@ -661,6 +703,8 @@ cv::Mat PadMatrix(const cv::Mat* src_image) {
     //std::cout << "New rows: " << padded_image.rows << std::endl;
     //std::cout << "New cols: " << padded_image.cols << std::endl;
     //std::cout << padded_image << std::endl;
+
+    new_image.release();
 
     return padded_image;
 }
