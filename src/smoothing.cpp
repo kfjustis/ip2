@@ -328,6 +328,17 @@ void TEST_GetMatrixSlice() {
     }
 }
 
+bool ImageSharpen(const cv::Mat* src_image, unsigned int scalar) {
+    if (src_image == NULL) {
+        std::cout << "\nError (smoothing.cpp/ImageSharpen): " << std::endl;
+        std::cout << "\tPassed image was null" << std::endl;
+        return false;
+    }
+
+    // setup a lot of stuff for convolution and filter2D variables
+    return false;
+}
+
 bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations) {
     if (src_image == NULL) {
         std::cout << "\nError (smoothing.cpp/MeanSmoothing): " << std::endl;

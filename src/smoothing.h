@@ -50,6 +50,16 @@ cv::Mat GetMatrixSlice(const cv::Mat* src_image, int row, int col, int kernel_si
 void TEST_GetMatrixSlice();
 
 /*
+ * Applies image filter from pre-defined kernel to sharpen the image.
+ * First, the filter is applied to the source image. Then, the resulting matrix
+ * is subtracted at each corresponding pixel value as shown in the Assignment 2 Q&A slides.
+ * PARAMS: const cv::Mat* src_image - the matrix representing the source image
+ *         unsigned int scalar - value that can be applied to the kernel for different results
+ * RETURN: bool - true on success, false on failure
+ */
+bool ImageSharpen(const cv::Mat* src_image, unsigned int scalar);
+
+/*
  * Applies mean smoothing filter to the passed image.
  * PARAMS: const cv::Mat* src_image - reference to source image data as an opencv matrix
  *         unsigned int iterations - the number of times to apply mean filter before showing image

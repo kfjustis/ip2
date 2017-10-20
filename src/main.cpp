@@ -50,11 +50,10 @@ int main(int argc, char** argv) {
 				break;
 			}
 		case 3:
-			//std::cout << "\nMedian filter not supported yet." << std::endl;
 			std::cout << "\nProcessing image with median filter at " << data << " iterations..." << std::endl;
 			if (ip2::MedianSmoothing(&src_image, data) == false) {
 				std::cout << "\nError (main.cpp): " << std::endl;
-				std::cout << "\tMean smoothing failed" << std::endl;
+				std::cout << "\tMedian smoothing failed" << std::endl;
 				src_image.release();
 				return -1;
 			} else {
@@ -62,6 +61,16 @@ int main(int argc, char** argv) {
 				break;
 			}
 		case 4:
+			if (ip2::ImageSharpen(&src_image, data) == false) {
+				std::cout << "\nError (main.cpp): " << std::endl;
+				std::cout << "\tSharpening failed" << std::endl;
+				src_image.release();
+				return -1;
+			} else {
+				std::cout << "\nSharpengin success.\n" << std::endl;
+				break;
+			}
+		case 5:
 			std::cout << "\nRunning tests..." << std::endl;
 			//ip2::TEST_GetMatrixSlice();
 			//ip2::TEST_PadMatrix();
