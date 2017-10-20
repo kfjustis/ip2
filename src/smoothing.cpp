@@ -377,33 +377,33 @@ int MedianMatrix(const cv::Mat* src) {
     cv::Mat sort_holder = src->clone();
     sort_holder = sort_holder.reshape(0,1);
 
-    std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
+    /*std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
     std::cout << "Re-shaped slice:" << std::endl;
-    std::cout << sort_holder << std::endl;
+    std::cout << sort_holder << std::endl;*/
 
     cv::sort(sort_holder, sort_holder, CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
 
-    std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
+    /*std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
     std::cout << "After sorting:" << std::endl;
-    std::cout << sort_holder << std::endl;
+    std::cout << sort_holder << std::endl;*/
 
     int mid_idx = 0;
     int median = -1;
     if (sort_holder.cols % 2 == 0) {
         // do even case
         mid_idx = sort_holder.cols/2 - 1;
-        std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
-        std::cout << "Middle even index: " << mid_idx << std::endl;
+        /*std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
+        std::cout << "Middle even index: " << mid_idx << std::endl;*/
         median = (sort_holder.at<uchar>(mid_idx) + sort_holder.at<uchar>(mid_idx+1))/2;
-        std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
-        std::cout << "Median value: " << median << std::endl;
+        /*std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
+        std::cout << "Median value: " << median << std::endl;*/
     } else {
         mid_idx = (int) (round(sort_holder.cols/2.0) - 1);
-        std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
-        std::cout << "Middle index: " << mid_idx << std::endl;
+        /*std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
+        std::cout << "Middle index: " << mid_idx << std::endl;*/
         median = sort_holder.at<uchar>(mid_idx);
-        std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
-        std::cout << "Median value: " << median << std::endl;
+        /*std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
+        std::cout << "Median value: " << median << std::endl;*/
     }
 
     sort_holder.release();
@@ -454,6 +454,8 @@ void TEST_MedianMatrix() {
         std::cout << "\nTest failed (smoothing.cpp/TEST_MedianMatrix)" << std::endl;
         std::cout << "\tTest failed even case." << std::endl;
     }
+
+    test_mat2.release();
 }
 
 bool MedianSmoothing(const cv::Mat* src_image, unsigned int iterations) {
