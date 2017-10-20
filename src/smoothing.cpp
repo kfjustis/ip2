@@ -358,8 +358,69 @@ void TEST_MeanSmoothing() {
     test_padded.release();
 }
 
+int MedianMatrix(const cv::Mat* src) {
+    return -1;
+}
+
 bool MedianSmoothing(const cv::Mat* src_image, unsigned int iterations) {
-    return false;
+    if (src_image == NULL) {
+        std::cout << "\nError (smoothing.cpp/MedianSmoothing): " << std::endl;
+        std::cout << "\tPassed image was null" << std::endl;
+        return false;
+    }
+
+    /* for each index of the matrix (the inner part of the padded matrix)
+        grab a slice the size of the kernel
+        determine occurrences and choose the max to replace the center
+        write the slice into a new matrix?
+        display the image
+        wait key
+    */
+
+    cv::Mat padded_image = PadMatrix(src_image);
+    cv::Mat slice, output;
+    int kernel_size = 3;
+    int median = -2;
+    output = src_image->clone();
+
+    /*std::cout << "\nMessage (smoothing.cpp/MedianSmoothing): " << std::endl;
+    std::cout << "\tRequested loop iterations: " << iterations << std::endl;
+    std::cout << "\tStart matrix:" << std::endl;
+    std::cout << *src_image << std::endl;*/
+
+    for (unsigned int loop = 0; loop < iterations; ++loop) {
+        // i,j always points to the upper left of the current slice with this indexing
+        for (int i = 0; i < padded_image.rows-kernel_size+1; ++i) {
+            for (int j = 0; j < padded_image.cols-kernel_size+1; ++j) {
+                slice = GetMatrixSlice(&padded_image, i, j, kernel_size);
+                /*if ((average = AverageMatrix(&slice)) == -1) {
+                    std::cout << "\nError (smoothing.cpp/MeanSmoothing): " << std::endl;
+                    std::cout << "\tFailed to average during processing" << std::endl;
+                    return false;
+                }*/
+                //std::cout << "average: " << average << std::endl;
+                if ((median = MedianMatrix(&slice)) == -1) {
+                    std::cout << "\nError (smoothing.cpp/MedianSmoothing): " << std::endl;
+                    std::cout << "\tFailed to get median during processing" << std::endl;
+                    return false;
+                }
+                output.at<uchar>(i,j) = (uchar) median;
+            }
+        }
+        // setup padded_image for next iteration
+        padded_image = PadMatrix(&output);
+    }
+
+    std::cout << "\nMedianSmoothing before and after:" << std::endl;
+    std::cout << *src_image << std::endl << std::endl;
+    std::cout << output << std::endl;
+
+    /*cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
+	cv::imshow("Output image", output);
+    cv::waitKey(0);*/
+
+    return true;
+
 }
 
 cv::Mat PadMatrix(const cv::Mat* src_image) {

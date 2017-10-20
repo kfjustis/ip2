@@ -8,10 +8,10 @@
 
 namespace ip2 {
 /*
- * Determines the average of the values in the matrix and replaces the middle with this average.
+ * Determines the average of the values in the matrix and returns it.
  * Dimensions must be square for this to work.
  * PARAMS: const cv::Mat* src - reference to the source matrix
- * RETURN: int - the new center value for the matrix after averaging
+ * RETURN: int - the resulting average from the passed matrix, -1 on failure
  */
 int AverageMatrix(const cv::Mat* src);
 void TEST_AverageMatrix();
@@ -46,6 +46,15 @@ void TEST_GetMatrixSlice();
  */
 bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations);
 void TEST_MeanSmoothing();
+
+/*
+ * Determines the median of the values in the matrix and returns it.
+ * Dimensions must be square for this to work.
+ * PARAMS: const cv::Mat* src - reference to the source matrix
+ * RETURN: int - the resulting median value from the passed matrix, -1 on failure
+ */
+int MedianMatrix(const cv::Mat* src);
+void TEST_MedianMatrix();
 
 /*
  * Applies median smoothing filter to the passed image.
