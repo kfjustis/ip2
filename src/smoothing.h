@@ -28,10 +28,10 @@ void TEST_CheckSliceDimensions();
 /*
  * Applies Gaussian smoothing filter to the passed image.
  * PARAMS: const cv::Mat* src_image - reference to source image data as an opencv matrix
- *         unsigned int iterations - the number of times to apply gaussian filter before showing image
+ *         unsigned int sigma - sigma value to use when calculating the gaussian kernel
  * RETURN: bool - true on success, false on failure
  */
-bool GaussianSmoothing(const cv::Mat* src_image, unsigned int iterations);
+bool GaussianSmoothing(const cv::Mat* src_image, unsigned int sigma);
 void TEST_GaussianSmoothing();
 
 /*

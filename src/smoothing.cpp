@@ -107,7 +107,7 @@ void TEST_CheckSliceDimensions() {
     std::cout << "test_bad_mat passes: " << CheckSliceDimensions(&test_bad_mat) << std::endl;
 }
 
-bool GaussianSmoothing(const cv::Mat* src_image, unsigned int iterations) {
+bool GaussianSmoothing(const cv::Mat* src_image, unsigned int sigma) {
     return false;
 }
 
