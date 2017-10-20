@@ -28,13 +28,14 @@ int main(int argc, char** argv) {
 	// apply filter
 	switch(filter_type) {
 		case 1:
+			std::cout << "\nProcessing image with mean filter at " << data << " iterations..." << std::endl;
 			if (ip2::MeanSmoothing(&src_image, data) == false) {
 				std::cout << "\nError (main.cpp): " << std::endl;
 				std::cout << "\tMean smoothing failed" << std::endl;
 				src_image.release();
 				return -1;
 			} else {
-				std::cout << "\nMean smoothing success.\n" << std::endl;
+				std::cout << "Mean smoothing success.\n" << std::endl;
 				break;
 			}
 		case 2:
@@ -43,6 +44,7 @@ int main(int argc, char** argv) {
 			break;
 		case 3:
 			//std::cout << "\nMedian filter not supported yet." << std::endl;
+			std::cout << "\nProcessing image with median filter at " << data << " iterations..." << std::endl;
 			if (ip2::MedianSmoothing(&src_image, data) == false) {
 				std::cout << "\nError (main.cpp): " << std::endl;
 				std::cout << "\tMean smoothing failed" << std::endl;

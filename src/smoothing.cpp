@@ -507,13 +507,13 @@ bool MedianSmoothing(const cv::Mat* src_image, unsigned int iterations) {
         padded_image = PadMatrix(&output);
     }
 
-    std::cout << "\nMedianSmoothing before and after:" << std::endl;
+    /*std::cout << "\nMedianSmoothing before and after:" << std::endl;
     std::cout << *src_image << std::endl << std::endl;
-    std::cout << output << std::endl;
+    std::cout << output << std::endl;*/
 
-    /*cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
+    cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
 	cv::imshow("Output image", output);
-    cv::waitKey(0);*/
+    cv::waitKey(0);
 
     return true;
 
