@@ -367,44 +367,48 @@ int MedianMatrix(const cv::Mat* src) {
         return -1;
     }
 
-    if (CheckSliceDimensions(src) == false) {
+    /*if (CheckSliceDimensions(src) == false) {
         std::cout << "\nError (smoothing.cpp/MedianMatrix): " << std::endl;
         std::cout << "\tPassed matrix was not square" << std::endl;
         return -1;
-    }
+    }*/
 
     // reshape the slice to be 1D matrix
     cv::Mat sort_holder = src->clone();
     sort_holder = sort_holder.reshape(0,1);
 
-    std::cout << "\nError (smoothing.cpp/MedianMatrix): " << std::endl;
+    std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
     std::cout << "Re-shaped slice:" << std::endl;
     std::cout << sort_holder << std::endl;
 
-    // track the elements with hash map
-    /*std::map<int, int> occurs;
-    for (int i = 0l i < src->rows; ++i) {
-        for (int j = 0; j < src->cols; ++j) {
-            // check if key in map
-            if (occurs.find(src->at<uchar>(i,j) == occurs.end()) {
-                occurs[src->at<uchar>(i,j)] = 1;
-            } else {
-                occurs[src->at<uchar>(i,j)] += 1;
-            }
-        }
+    cv::sort(sort_holder, sort_holder, CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
+
+    std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
+    std::cout << "After sorting:" << std::endl;
+    std::cout << sort_holder << std::endl;
+
+    int mid_idx = 0;
+    int median = -1;
+    if (sort_holder.cols % 2 == 0) {
+        // do even case
+        mid_idx = sort_holder.cols/2 - 1;
+        std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
+        std::cout << "Middle even index: " << mid_idx << std::endl;
+        median = (sort_holder.at<uchar>(mid_idx) + sort_holder.at<uchar>(mid_idx+1))/2;
+        std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
+        std::cout << "Median value: " << median << std::endl;
+    } else {
+        mid_idx = (int) (round(sort_holder.cols/2.0) - 1);
+        std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
+        std::cout << "Middle index: " << mid_idx << std::endl;
+        median = sort_holder.at<uchar>(mid_idx);
+        std::cout << "\nMessage (smoothing.cpp/MedianMatrix): " << std::endl;
+        std::cout << "Median value: " << median << std::endl;
     }
 
-    // determine value with most occurrences
-    int max_key = 0;
-    int max_value = 0;
-    for (auto it = occurs.cbegin(); it != occurs.cend(); ++it) {
-        if (it->second > start_max) {
-            max_key = it->first;
-            max_value = it->second;
-        }
-    }*/
+    sort_holder.release();
 
-    return 0;
+    return median;
 }
 
 void TEST_MedianMatrix() {
@@ -423,9 +427,33 @@ void TEST_MedianMatrix() {
     test_mat.at<uchar>(2,1) = (uchar) 4;
     test_mat.at<uchar>(2,2) = (uchar) 7;
 
-    MedianMatrix(&test_mat);
+    int median = MedianMatrix(&test_mat);
+    if (median == 5) {
+        std::cout << "\nTest passed (smoothing.cpp/TEST_MedianMatrix)" << std::endl;
+        std::cout << "\tTest passed odd case." << std::endl;
+    } else {
+        std::cout << "\nTest failed (smoothing.cpp/TEST_MedianMatrix)" << std::endl;
+        std::cout << "\tTest failed odd case." << std::endl;
+    }
 
     test_mat.release();
+
+    cv::Mat test_mat2 = cv::Mat::Mat(1, 4, CV_8UC1);
+
+    /* 4 2 4 5 */
+    test_mat2.at<uchar>(0, 0) = (uchar) 4;
+    test_mat2.at<uchar>(0, 1) = (uchar) 2;
+    test_mat2.at<uchar>(0, 2) = (uchar) 4;
+    test_mat2.at<uchar>(0, 3) = (uchar) 5;
+
+    median = MedianMatrix(&test_mat2);
+    if (median == 4) {
+        std::cout << "\nTest passed (smoothing.cpp/TEST_MedianMatrix)" << std::endl;
+        std::cout << "\tTest passed even case." << std::endl;
+    } else {
+        std::cout << "\nTest failed (smoothing.cpp/TEST_MedianMatrix)" << std::endl;
+        std::cout << "\tTest failed even case." << std::endl;
+    }
 }
 
 bool MedianSmoothing(const cv::Mat* src_image, unsigned int iterations) {
