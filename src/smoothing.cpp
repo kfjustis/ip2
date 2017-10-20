@@ -64,6 +64,8 @@ void TEST_AverageMatrix() {
         std::cout << "\tTest failed. Value was: " << test_mat.at<uchar>(1,1) << std::endl;
         return;
     }
+
+    test_mat.release();
 }
 
 bool CheckSliceDimensions(const cv::Mat* src) {
@@ -359,7 +361,71 @@ void TEST_MeanSmoothing() {
 }
 
 int MedianMatrix(const cv::Mat* src) {
-    return -1;
+    if (src == NULL) {
+        std::cout << "\nError (smoothing.cpp/MedianMatrix): " << std::endl;
+        std::cout << "\tPassed matrix was null" << std::endl;
+        return -1;
+    }
+
+    if (CheckSliceDimensions(src) == false) {
+        std::cout << "\nError (smoothing.cpp/MedianMatrix): " << std::endl;
+        std::cout << "\tPassed matrix was not square" << std::endl;
+        return -1;
+    }
+
+    // reshape the slice to be 1D matrix
+    cv::Mat sort_holder = src->clone();
+    sort_holder = sort_holder.reshape(0,1);
+
+    std::cout << "\nError (smoothing.cpp/MedianMatrix): " << std::endl;
+    std::cout << "Re-shaped slice:" << std::endl;
+    std::cout << sort_holder << std::endl;
+
+    // track the elements with hash map
+    /*std::map<int, int> occurs;
+    for (int i = 0l i < src->rows; ++i) {
+        for (int j = 0; j < src->cols; ++j) {
+            // check if key in map
+            if (occurs.find(src->at<uchar>(i,j) == occurs.end()) {
+                occurs[src->at<uchar>(i,j)] = 1;
+            } else {
+                occurs[src->at<uchar>(i,j)] += 1;
+            }
+        }
+    }
+
+    // determine value with most occurrences
+    int max_key = 0;
+    int max_value = 0;
+    for (auto it = occurs.cbegin(); it != occurs.cend(); ++it) {
+        if (it->second > start_max) {
+            max_key = it->first;
+            max_value = it->second;
+        }
+    }*/
+
+    return 0;
+}
+
+void TEST_MedianMatrix() {
+    cv::Mat test_mat = cv::Mat::Mat(3, 3, CV_8UC1);
+
+    /* 5 3 6
+       2 1 9
+       8 4 7 */
+    test_mat.at<uchar>(0,0) = (uchar) 5;
+    test_mat.at<uchar>(0,1) = (uchar) 3;
+    test_mat.at<uchar>(0,2) = (uchar) 6;
+    test_mat.at<uchar>(1,0) = (uchar) 2;
+    test_mat.at<uchar>(1,1) = (uchar) 1;
+    test_mat.at<uchar>(1,2) = (uchar) 9;
+    test_mat.at<uchar>(2,0) = (uchar) 8;
+    test_mat.at<uchar>(2,1) = (uchar) 4;
+    test_mat.at<uchar>(2,2) = (uchar) 7;
+
+    MedianMatrix(&test_mat);
+
+    test_mat.release();
 }
 
 bool MedianSmoothing(const cv::Mat* src_image, unsigned int iterations) {

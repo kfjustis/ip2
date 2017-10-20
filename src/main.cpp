@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
 			//ip2::TEST_CheckSliceDimensions();
 			//ip2::TEST_AverageMatrix();
 			//ip2::TEST_MeanSmoothing();
+			ip2::TEST_MedianMatrix();
 			break;
 		default:
 			std::cout << "\nError (main.cpp): " << std::endl;
