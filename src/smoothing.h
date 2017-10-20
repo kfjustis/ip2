@@ -24,6 +24,16 @@ void TEST_AverageMatrix();
  */
 bool CheckSliceDimensions(const cv::Mat* src);
 void TEST_CheckSliceDimensions();
+
+/*
+ * Applies Gaussian smoothing filter to the passed image.
+ * PARAMS: const cv::Mat* src_image - reference to source image data as an opencv matrix
+ *         unsigned int iterations - the number of times to apply gaussian filter before showing image
+ * RETURN: bool - true on success, false on failure
+ */
+bool GaussianSmoothing(const cv::Mat* src_image, unsigned int iterations);
+void TEST_GaussianSmoothing();
+
 /*
  * Takes a given matrix and upper left coordinate for a region slice.
  * From that coordinate, a new matrix is generated with the same

@@ -40,8 +40,15 @@ int main(int argc, char** argv) {
 			}
 		case 2:
 			std::cout << "\nGaussian filter not supported yet." << std::endl;
-			src_image.release();
-			break;
+			if (ip2::GaussianSmoothing(&src_image, data) == false) {
+				std::cout << "\nError (main.cpp): " << std::endl;
+				std::cout << "\tGaussian smoothing failed" << std::endl;
+				src_image.release();
+				return -1;
+			} else {
+				std::cout << "Gaussian smoothing success. \n" << std::endl;
+				break;
+			}
 		case 3:
 			//std::cout << "\nMedian filter not supported yet." << std::endl;
 			std::cout << "\nProcessing image with median filter at " << data << " iterations..." << std::endl;
@@ -52,8 +59,8 @@ int main(int argc, char** argv) {
 				return -1;
 			} else {
 				std::cout << "\nMean smoothing success.\n" << std::endl;
+				break;
 			}
-			break;
 		case 4:
 			std::cout << "\nRunning tests..." << std::endl;
 			//ip2::TEST_GetMatrixSlice();
@@ -61,7 +68,8 @@ int main(int argc, char** argv) {
 			//ip2::TEST_CheckSliceDimensions();
 			//ip2::TEST_AverageMatrix();
 			//ip2::TEST_MeanSmoothing();
-			ip2::TEST_MedianMatrix();
+			//ip2::TEST_MedianMatrix();
+			//ip2::TEST_GaussianSmoothing();
 			break;
 		default:
 			std::cout << "\nError (main.cpp): " << std::endl;
