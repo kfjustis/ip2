@@ -26,6 +26,14 @@ bool CheckSliceDimensions(const cv::Mat* src);
 void TEST_CheckSliceDimensions();
 
 /*
+ * Creates a Gaussian Pyramid diagram from a square image. The new data
+ * gets appended to the original source image in order to save space.
+ * PARAMS: cv::Mat* src_image - the original source image
+ * RETURN: bool - true on success, false on failure
+ */
+bool GaussianPyramid(cv::Mat* src_image);
+
+/*
  * Applies Gaussian smoothing filter to the passed image.
  * PARAMS: const cv::Mat* src_image - reference to source image data as an opencv matrix
  *         unsigned int sigma - sigma value to use when calculating the gaussian kernel

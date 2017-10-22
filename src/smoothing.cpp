@@ -110,6 +110,10 @@ void TEST_CheckSliceDimensions() {
     test_bad_mat.release();
 }
 
+bool GaussianPyramid(cv::Mat* src_image) {
+    return false;
+}
+
 bool GaussianSmoothing(const cv::Mat* src_image, unsigned int sigma) {
     if (src_image == NULL) {
         std::cout << "\nError (smoothing.cpp/GaussianSmoothing): " << std::endl;

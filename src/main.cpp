@@ -5,9 +5,16 @@ int main(int argc, char** argv) {
 	if (argc != 4) {
 		std::cout << "\nError (main.cpp): " << std::endl;
 		std::cout << "Invalid command line args -->" << std::endl;
-		std::cout << "\tUSAGE: " << argv[0] << " <image file> <smoothing type> <data>" << std::endl;
-		std::cout << "\t<smoothing 1-3> <data == num iterations>" << std::endl;
-		std::cout << "\tSmoothing types: 1 -- Mean | 2 -- Gaussian | 3 -- Median " << std::endl;
+		std::cout << "\tUSAGE: " << argv[0] << " <image file> <operation> <data>" << std::endl;
+		std::cout << "\n<operations 1-3> <data == num iterations>" << std::endl;
+		std::cout << "\t1 -- Mean smoothing | 2 -- Gaussian smoothing | 3 -- Median smoothing" << std::endl;
+		std::cout << "\n<operation 4> <data == average>" << std::endl;
+		std::cout << "\tImage sharpening; the data param specifies the degree of average" << std::endl;
+		std::cout << "\n<operation 5> <data == does nothing>" << std::endl;
+		std::cout << "\tCreates a gaussian pryamid" << std::endl;
+		std::cout << "\n<operation 6> <data == does nothing>" << std::endl;
+		std::cout << "\tPerforms test functions when enabled" << std::endl;
+		std::cout << "\n<operation> and <data> parameters should be integer values" << std::endl;
 		return -1;
 	}
 
@@ -71,6 +78,16 @@ int main(int argc, char** argv) {
 				break;
 			}
 		case 5:
+			if (ip2::GaussianPyramid(&src_image) == false) {
+				std::cout << "\nError (main.cpp): " << std::endl;
+				std::cout << "\tGaussian pyramid failed" << std::endl;
+				src_image.release();
+				return -1;
+			} else {
+				std::cout << "\nPyramid success.\n" << std::endl;
+				break;
+			}
+		case 6:
 			std::cout << "\nRunning tests..." << std::endl;
 			//ip2::TEST_GetMatrixSlice();
 			//ip2::TEST_PadMatrix();
