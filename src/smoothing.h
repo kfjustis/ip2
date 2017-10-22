@@ -30,6 +30,8 @@ void TEST_CheckSliceDimensions();
  * gets appended to the original source image in order to save space.
  * PARAMS: cv::Mat* src_image - the original source image
  * RETURN: bool - true on success, false on failure
+ *
+ * SOURCE: https://docs.opencv.org/3.1.0/d4/d1f/tutorial_pyramids.html
  */
 bool GaussianPyramid(cv::Mat* src_image);
 
@@ -65,7 +67,6 @@ void TEST_GetMatrixSlice();
  *         unsigned int data - value that can increased the average image when sharpening
  * RETURN: bool - true on success, false on failure
  *
- * SOURCE: https://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/filter_2d/filter_2d.html
  */
 bool ImageSharpen(const cv::Mat* src_image, unsigned int data);
 
