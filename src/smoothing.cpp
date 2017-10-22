@@ -366,11 +366,25 @@ bool ImageSharpen(const cv::Mat* src_image, unsigned int scalar) {
     // matrix after the filtered matrix is subtracted from the original matrix (the result)
     cv::Mat output = src_image->clone();
 
+    cv::Point pivot = cv::Point(-1,-1);
+    double delta = 0.0;
+    int ddepth = -1;
+    //int kernel_size;
+
     // setup a lot of stuff for convolution and filter2D variables
     //filter2D(src, dst, ddepth , kernel, anchor, delta, BORDER_DEFAULT);
+    filter2D(original, after_filter, ddepth, kernel, pivot, delta, cv::BORDER_DEFAULT);
+
+    cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
+	cv::imshow("Output image", after_filter);
+    cv::waitKey(0);
 
     kernel.release();
-    return false;
+    original.release();
+    after_filter.release();
+    output.release();
+
+    return true;
 }
 
 bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations) {

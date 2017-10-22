@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
 				src_image.release();
 				return -1;
 			} else {
-				std::cout << "\nSharpengin success.\n" << std::endl;
+				std::cout << "\nSharpening success.\n" << std::endl;
 				break;
 			}
 		case 5:
