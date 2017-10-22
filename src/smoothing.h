@@ -54,12 +54,12 @@ void TEST_GetMatrixSlice();
  * First, the filter is applied to the source image. Then, the resulting matrix
  * is subtracted at each corresponding pixel value as shown in the Assignment 2 Q&A slides.
  * PARAMS: const cv::Mat* src_image - the matrix representing the source image
- *         unsigned int scalar - value that can be applied to the kernel for different results
+ *         unsigned int data - value that can increased the average image when sharpening
  * RETURN: bool - true on success, false on failure
  *
  * SOURCE: https://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/filter_2d/filter_2d.html
  */
-bool ImageSharpen(const cv::Mat* src_image, unsigned int scalar);
+bool ImageSharpen(const cv::Mat* src_image, unsigned int data);
 
 /*
  * Applies mean smoothing filter to the passed image.
@@ -69,6 +69,14 @@ bool ImageSharpen(const cv::Mat* src_image, unsigned int scalar);
  */
 bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations);
 void TEST_MeanSmoothing();
+
+/*
+ * Applies mean smoothing filter to the passed image and returns the new matrix.
+ * PARAMS: const cv::Mat* src_image - reference to source image data as an opencv matrix
+ *         unsigned int iterations - the number of times to apply mean filter before showing image
+ * RETURN: cv::Mat - blurred image on success, empty Mat() on failure
+ */
+cv::Mat MeanSmoothingReturn(const cv::Mat* src_image, unsigned int iterations);
 
 /*
  * Determines the median of the values in the matrix and returns it.

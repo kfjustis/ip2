@@ -336,7 +336,7 @@ void TEST_GetMatrixSlice() {
     pad_test_mat.release();
 }
 
-bool ImageSharpen(const cv::Mat* src_image, unsigned int scalar) {
+bool ImageSharpen(const cv::Mat* src_image, unsigned int data) {
     if (src_image == NULL) {
         std::cout << "\nError (smoothing.cpp/ImageSharpen): " << std::endl;
         std::cout << "\tPassed image was null" << std::endl;
@@ -363,20 +363,28 @@ bool ImageSharpen(const cv::Mat* src_image, unsigned int scalar) {
     cv::Mat original = src_image->clone();
     // matrix after the filter is applied
     cv::Mat after_filter = src_image->clone();
+    // matrix mask after subtracting the average
+    cv::Mat original_mask = src_image->clone();
     // matrix after the filtered matrix is subtracted from the original matrix (the result)
     cv::Mat output = src_image->clone();
 
-    cv::Point pivot = cv::Point(-1,-1);
-    double delta = 0.0;
-    int ddepth = -1;
-    //int kernel_size;
+    // get the averaged image
+    after_filter = MeanSmoothingReturn(&original, data);
+    if (after_filter.empty()) {
+        std::cout << "\nError (smoothing.cpp/ImageSharpen): " << std::endl;
+        std::cout << "\tFailed to average original image" << std::endl;
+        return false;
+    }
 
-    // setup a lot of stuff for convolution and filter2D variables
-    //filter2D(src, dst, ddepth , kernel, anchor, delta, BORDER_DEFAULT);
-    filter2D(original, after_filter, ddepth, kernel, pivot, delta, cv::BORDER_DEFAULT);
+    for (int i = 0; i < original_mask.rows; ++i) {
+        for (int j = 0; j < original_mask.cols; ++j) {
+            original_mask.at<int>(i,j) = (int) 4 * (original.at<int>(i,j) - after_filter.at<int>(i,j));
+            output.at<int>(i,j) = original.at<int>(i,j) + original_mask.at<int>(i,j);
+        }
+    }
 
     cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
-	cv::imshow("Output image", after_filter);
+	cv::imshow("Output image", output);
     cv::waitKey(0);
 
     kernel.release();
@@ -447,6 +455,59 @@ bool MeanSmoothing(const cv::Mat* src_image, unsigned int iterations) {
     output.release();
 
     return true;
+}
+
+cv::Mat MeanSmoothingReturn(const cv::Mat* src_image, unsigned int iterations) {
+    if (src_image == NULL) {
+        std::cout << "\nError (smoothing.cpp/MeanSmoothingReturn): " << std::endl;
+        std::cout << "\tPassed image was null" << std::endl;
+        return cv::Mat();
+    }
+
+    /* for each index of the matrix (the inner part of the padded matrix)
+        grab a slice the size of the kernel
+        perform the average calculation and replace the data
+        write the slice into a new matrix?
+        display the image
+        wait key
+    */
+
+    cv::Mat padded_image = PadMatrix(src_image);
+    cv::Mat slice, output;
+    int kernel_size = 3;
+    int average = -2;
+    output = src_image->clone();
+
+    /*std::cout << "\nMessage (smoothing.cpp/MeanSmoothing): " << std::endl;
+    std::cout << "\tRequested loop iterations: " << iterations << std::endl;
+    std::cout << "\tStart matrix:" << std::endl;
+    std::cout << *src_image << std::endl;*/
+
+    for (unsigned int loop = 0; loop < iterations; ++loop) {
+        // i,j always points to the upper left of the current slice with this indexing
+        /*std::cout << "\nMessage (smoothing.cpp/MeanSmoothing): " << std::endl;
+        std::cout << "\tPadded image before slicing:" << std::endl;
+        std::cout << padded_image << std::endl;*/
+        for (int i = 0; i < padded_image.rows-kernel_size+1; ++i) {
+            for (int j = 0; j < padded_image.cols-kernel_size+1; ++j) {
+                slice = GetMatrixSlice(&padded_image, i, j, kernel_size);
+                if ((average = AverageMatrix(&slice)) == -1) {
+                    std::cout << "\nError (smoothing.cpp/MeanSmoothingReturn): " << std::endl;
+                    std::cout << "\tFailed to average during processing" << std::endl;
+                    return cv::Mat();
+                }
+                //std::cout << "average: " << average << std::endl;
+                output.at<uchar>(i,j) = (uchar) average;
+            }
+        }
+        // setup padded_image for next iteration
+        padded_image = PadMatrix(&output);
+    }
+
+    padded_image.release();
+    slice.release();
+
+    return output;
 }
 
 void TEST_MeanSmoothing() {
