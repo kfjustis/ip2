@@ -117,6 +117,12 @@ bool GaussianPyramid(cv::Mat* src_image) {
         return false;
     }
 
+    if (CheckSliceDimensions(src_image) == false) {
+        std::cout << "\nError (smoothing.cpp/GaussianPyramid): " << std::endl;
+        std::cout << "\tPassed image was not square" << std::endl;
+        return false;
+    }
+
     // holds image copy to process with
     cv::Mat original = src_image->clone();
     cv::Mat temp = src_image->clone();
@@ -128,33 +134,49 @@ bool GaussianPyramid(cv::Mat* src_image) {
 
     // average the image by 1 pass
     temp = MeanSmoothingReturn(&temp, 1);
+    std::cout << "temp lens r,c :: " << temp.rows << "," << temp.cols << std::endl;
     // holds the downscaled version of temp
     cv::Mat down = cv::Mat::Mat(temp.rows/2, temp.cols/2, CV_8UC1);
     // coords to place the downsamples
     int place_row = 0, place_col = original.cols;
-    std::cout << "py: start coord: " << place_row << " , " << place_col << std::endl;
+    std::cout << "py: start r,c: " << place_row << " , " << place_col << std::endl;
 
     // loop here
     // remove every even row and column
-    for (int i = 0; i < down.rows; ++i) {
-        for (int j = 0; j < down.cols; ++j) {
-            down.at<uchar>(i,j) = (uchar) temp.at<uchar>(i*2+1, j*2+1);
-        }
-    }
-    // place into source image
-    for (int y = 0; y < down.rows; ++y) {
-        for (int z = 0; z < down.cols; ++z) {
-            src_image->at<uchar>(place_row, place_col) = (uchar) down.at<uchar>(y,z);
-            place_col++;
-            if (place_col == src_image->cols) {
-                place_col = original.cols;
+    while (down.rows != 0) {
+        // generate downsample from temp
+        for (int i = 0; i < down.rows; ++i) {
+            for (int j = 0; j < down.cols; ++j) {
+                down.at<uchar>(i,j) = (uchar) temp.at<uchar>(i*2+1, j*2+1);
             }
         }
-        place_row++;
+
+        // place down into source image
+        std::cout << "down lens r,c :: " << down.rows << "," << down.cols << std::endl;
+        for (int y = 0; y < down.rows; ++y) {
+            for (int z = 0; z < down.cols; ++z) {
+                if (place_col > (original.cols + down.cols-1)) {
+                    place_col = original.cols;
+                }
+                src_image->at<uchar>(place_row, place_col) = (uchar) down.at<uchar>(y,z);
+                place_col++;
+                //std::cout << "py: wrote to r,c :: " << place_row << " , " << place_col << std::endl;
+            }
+            place_row++;
+        }
+
+        /*cv::namedWindow("down image", CV_WINDOW_AUTOSIZE);
+    	cv::imshow("down image", down);
+        cv::waitKey(0);*/
+
+        // generate new temp and resize down
+        temp = down.clone();
+        temp = MeanSmoothingReturn(&temp, 1);
+        down = cv::Mat::Mat(temp.rows/2, temp.cols/2, CV_8UC1);
     }
 
-    cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
-	cv::imshow("Output image", *src_image);
+    cv::namedWindow("Gaussian pyramid", CV_WINDOW_AUTOSIZE);
+	cv::imshow("Gaussian pyramid", *src_image);
     //cv::imshow("Output image", down);
     cv::waitKey(0);
 
