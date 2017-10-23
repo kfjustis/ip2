@@ -168,6 +168,8 @@ bool GaussianPyramid(cv::Mat* src_image) {
     int col_ext = src_image->rows / 2;
     cv::Mat extra = cv::Mat::Mat(src_image->rows, col_ext, CV_8UC1);
     cv::hconcat(*src_image,extra,*src_image);
+    cv::Mat scale_arr = cv::Mat::Mat(128, src_image->cols, CV_8UC1);
+    cv::Mat upsample;
 
     // average the image by 1 pass
     temp = MeanSmoothingReturn(&temp, 1);
@@ -175,6 +177,9 @@ bool GaussianPyramid(cv::Mat* src_image) {
     cv::Mat down = cv::Mat::Mat(temp.rows/2, temp.cols/2, CV_8UC1);
     // coords to place the downsamples
     int place_row = 0, place_col = original.cols;
+    // for the images at the bottom
+    int pr_bot_start = 0, pc_bot_le= 0;
+    int pr_bot = pr_bot_start, pc_bot = pc_bot_le;
 
     // loop here
     while (down.rows != 0) {
@@ -198,11 +203,39 @@ bool GaussianPyramid(cv::Mat* src_image) {
             place_row++;
         }
 
+        // place the images at the bottom
+        if (down.cols == 128) {
+
+        }
+        if (down.cols <= 128) {
+            if (down.cols < 128) {
+                upsample = Upsample(&down, 128);
+            } else if (down.cols == 128){
+                upsample = down.clone();
+            }
+            for (int a = 0; a < upsample.rows; ++a) {
+                for (int b = 0; b < upsample.cols; ++b) {
+                    if (pc_bot > (pc_bot_le + 128-1)) {
+                        pc_bot = pc_bot_le;
+                    }
+                    scale_arr.at<uchar>(pr_bot, pc_bot) = (uchar) upsample.at<uchar>(a,b);
+                    pc_bot++;
+                }
+                pr_bot++;
+                if (pr_bot == scale_arr.rows) {
+                    pr_bot = 0;
+                }
+            }
+            pc_bot_le += 128;
+        }
         // generate new temp and resize down
         temp = down.clone();
         temp = MeanSmoothingReturn(&temp, 1);
         down = cv::Mat::Mat(temp.rows/2, temp.cols/2, CV_8UC1);
     }
+
+    // concat the array
+    cv::vconcat(*src_image,scale_arr,*src_image);
 
     cv::namedWindow("Gaussian pyramid", CV_WINDOW_AUTOSIZE);
 	cv::imshow("Gaussian pyramid", *src_image);
@@ -212,6 +245,8 @@ bool GaussianPyramid(cv::Mat* src_image) {
     temp.release();
     extra.release();
     down.release();
+    scale_arr.release();
+    upsample.release();
 
     return true;
 }
