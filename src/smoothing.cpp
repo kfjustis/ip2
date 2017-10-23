@@ -901,4 +901,24 @@ void TEST_PadMatrix() {
     pad3.release();
 
 }
+
+cv::Mat Upsample(const cv::Mat* src_image) {
+    return cv::Mat();
+}
+
+void TEST_Upsample(const cv::Mat* src_image) {
+    cv::Mat test = Upsample(src_image);
+    if (test.empty()) {
+        std::cout << "\nError (smoothing.cpp/TEST_Upsample): " << std::endl;
+        std::cout << "\tReturned upsample was empty" << std::endl;
+        test.release();
+    } else {
+        cv::namedWindow("TEST_Upsample", CV_WINDOW_AUTOSIZE);
+    	cv::imshow("TEST_Upsample", test);
+        cv::waitKey(0);
+
+        test.release();
+        std::cout << "\nTest passed (smoothing.cpp/TEST_Upsample): " << std::endl;
+    }
+}
 } // namespace

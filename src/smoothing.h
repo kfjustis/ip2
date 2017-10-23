@@ -113,4 +113,12 @@ void TEST_MedianSmoothing();
 cv::Mat PadMatrix(const cv::Mat* src_image);
 void TEST_PadMatrix();
 
+/*
+ * Takes a given matrix and upsamples it, returning the result.
+ * PARAMS: const cv::Mat* src_image - reference to source image data as an opencv matrix
+ * RETURN: a new Mat containing the upsampled image, empty Mat on failure
+ */
+cv::Mat Upsample(const cv::Mat* src_image);
+void TEST_Upsample(const cv::Mat* src_image);
+
 } // namespace

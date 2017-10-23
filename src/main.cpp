@@ -96,6 +96,7 @@ int main(int argc, char** argv) {
 			//ip2::TEST_MeanSmoothing();
 			//ip2::TEST_MedianMatrix();
 			//ip2::TEST_GaussianSmoothing();
+			ip2::TEST_Upsample(&src_image);
 			break;
 		default:
 			std::cout << "\nError (main.cpp): " << std::endl;
