@@ -206,8 +206,8 @@ bool GaussianPyramid(cv::Mat* src_image) {
         // place the images at the bottom
         if (down.cols <= 128 && pc_bot_le != src_image->cols) {
             upsample = Upsample(&down, 128);
-            std::cout << "down: wrote to r,c :: " << down.rows << " , " << down.cols << std::endl;
-            std::cout << "upsample: wrote to r,c :: " << upsample.rows << " , " << upsample.cols << std::endl;
+            //std::cout << "down: wrote to r,c :: " << down.rows << " , " << down.cols << std::endl;
+            //std::cout << "upsample: wrote to r,c :: " << upsample.rows << " , " << upsample.cols << std::endl;
             for (int a = 0; a < upsample.rows; ++a) {
                 for (int b = 0; b < upsample.cols; ++b) {
                     if (pc_bot > (pc_bot_le + 128-1)) {
@@ -990,8 +990,8 @@ cv::Mat Upsample(const cv::Mat* src_image, int target_size) {
     }
 
     if (src_image->cols == target_size) {
-        std::cout << "\nError (smoothing.cpp/Upsample): " << std::endl;
-        std::cout << "\tNo upsampling required due to same target dimensions" << std::endl;
+        //std::cout << "\nError (smoothing.cpp/Upsample): " << std::endl;
+        //std::cout << "\tNo upsampling required due to same target dimensions" << std::endl;
         /*cv::namedWindow("No sample", CV_WINDOW_AUTOSIZE);
         cv::imshow("No sample", *src_image);
         cv::waitKey(0);*/
