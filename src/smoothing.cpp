@@ -111,7 +111,28 @@ void TEST_CheckSliceDimensions() {
 }
 
 bool GaussianPyramid(cv::Mat* src_image) {
-    return false;
+    if (src_image == NULL) {
+        std::cout << "\nError (smoothing.cpp/GaussianPyramid): " << std::endl;
+        std::cout << "\tPassed image was null" << std::endl;
+        return false;
+    }
+
+    // concat the extra space for the Pyramid
+    int col_ext = src_image->rows / 2;
+    cv::Mat extra = cv::Mat::Mat(src_image->rows, col_ext, CV_8UC1);
+    cv::hconcat(*src_image,extra,*src_image);
+
+    // average the image by 1 pass
+
+    // remove every even row and column
+
+    cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
+	cv::imshow("Output image", *src_image);
+    cv::waitKey(0);
+
+    extra.release();
+
+    return true;
 }
 
 bool GaussianSmoothing(const cv::Mat* src_image, unsigned int sigma) {
