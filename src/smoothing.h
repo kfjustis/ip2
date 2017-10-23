@@ -18,6 +18,14 @@ int AverageMatrix(const cv::Mat* src);
 void TEST_AverageMatrix();
 
 /*
+ * Checks to see if the given value is a valid square number.
+ * PARAMS: int value - the value to be checked, must be positive
+ * RETURN: bool - true on success, false on failure
+ */
+bool CheckIsSquare(int value);
+void TEST_CheckIsSquare();
+
+/*
  * Checks that the dimensions of the slice are a perfect square.
  * PARAMS: const cv::Mat* src - reference to the source matrix
  * RETURN: bool - true on success, false on failure
@@ -116,9 +124,10 @@ void TEST_PadMatrix();
 /*
  * Takes a given matrix and upsamples it, returning the result.
  * PARAMS: const cv::Mat* src_image - reference to source image data as an opencv matrix
+ *         int target_size - the max square dimension to upsample the input to
  * RETURN: a new Mat containing the upsampled image, empty Mat on failure
  */
-cv::Mat Upsample(const cv::Mat* src_image);
-void TEST_Upsample(const cv::Mat* src_image);
+cv::Mat Upsample(const cv::Mat* src_image, int target_size);
+void TEST_Upsample(const cv::Mat* src_image, int target_size);
 
 } // namespace

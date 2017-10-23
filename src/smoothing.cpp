@@ -68,6 +68,26 @@ void TEST_AverageMatrix() {
     test_mat.release();
 }
 
+bool CheckIsSquare(int value) {
+    if (value < 0) {
+        std::cout << "\nError (smoothing.cpp/CheckIsSquare): " << std::endl;
+        std::cout << "\tPassed value was negative" << std::endl;
+        return false;
+    }
+
+    int root = (int)sqrt(value);
+    if (root * root != value) {
+        return false;
+    }
+
+    return true;
+
+}
+
+void TEST_CheckIsSquare() {
+    return;
+}
+
 bool CheckSliceDimensions(const cv::Mat* src) {
     if (src == NULL) {
         std::cout << "\nError (smoothing.cpp/CheckSliceDimensions): " << std::endl;
@@ -902,21 +922,67 @@ void TEST_PadMatrix() {
 
 }
 
-cv::Mat Upsample(const cv::Mat* src_image) {
-    return cv::Mat();
+cv::Mat Upsample(const cv::Mat* src_image, int target_size) {
+    if (src_image == NULL) {
+        std::cout << "\nError (smoothing.cpp/Upsample): " << std::endl;
+        std::cout << "\tPassed image was null" << std::endl;
+        return cv::Mat();
+    }
+
+    if (CheckIsSquare(target_size) == false) {
+        std::cout << "\nError (smoothing.cpp/Upsample): " << std::endl;
+        std::cout << "\tPassed target size was not square" << std::endl;
+        return cv::Mat();
+    }
+
+    cv::Mat original = src_image->clone();
+    cv::Mat upsized = cv::Mat::Mat(original.rows*2, original.rows*2, CV_8UC1);
+    cv::Mat output;
+    cv::Mat slice;
+
+    std::cout << "UPSAMPLE ~" << std::endl;
+    std::cout << "o1: " << original.rows << " , " << original.cols << std::endl;
+    std::cout << "u1: " << upsized.rows << " , " << upsized.cols << std::endl;
+
+    // transfer pixels from original to upsize until targer size
+    while (output.cols != target_size) {
+        for (int i = 0; i < original.rows; ++i) {
+            for (int j = 0; j < original.cols; ++j) {
+                // pass TL coord of current quad in upsampled mat to be sliced and filled
+                int ur = i*2, uc = j*2;
+                slice = cv::Mat::Mat(2,2, CV_8UC1, (double) original.at<uchar>(i,j));
+
+                // place new values in upsides (TL, TR, BL, BR)
+                upsized.at<uchar>(i*2,j*2) = slice.at<uchar>(0,0);
+                upsized.at<uchar>(i*2,j*2+1) = slice.at<uchar>(0,1);
+                upsized.at<uchar>(i*2+1,j*2) = slice.at<uchar>(1,0);
+                upsized.at<uchar>(i*2+1,j*2+1) = slice.at<uchar>(1,1);
+            }
+        }
+        output = upsized.clone();
+        original = upsized.clone();
+        upsized = cv::Mat::Mat(original.rows*2, original.rows*2, CV_8UC1);
+    }
+
+    std::cout << "out: " << output.rows << " , " << output.cols << std::endl;
+
+    cv::namedWindow("Upsized", CV_WINDOW_AUTOSIZE);
+	cv::imshow("Upsized", output);
+    cv::waitKey(0);
+
+    original.release();
+    upsized.release();
+    slice.release();
+    return output;
 }
 
-void TEST_Upsample(const cv::Mat* src_image) {
-    cv::Mat test = Upsample(src_image);
+void TEST_Upsample(const cv::Mat* src_image, int target_size) {
+    cv::Mat test = Upsample(src_image, target_size);
     if (test.empty()) {
         std::cout << "\nError (smoothing.cpp/TEST_Upsample): " << std::endl;
         std::cout << "\tReturned upsample was empty" << std::endl;
         test.release();
     } else {
-        cv::namedWindow("TEST_Upsample", CV_WINDOW_AUTOSIZE);
-    	cv::imshow("TEST_Upsample", test);
-        cv::waitKey(0);
-
         test.release();
         std::cout << "\nTest passed (smoothing.cpp/TEST_Upsample): " << std::endl;
     }
