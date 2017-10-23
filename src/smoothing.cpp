@@ -117,17 +117,40 @@ bool GaussianPyramid(cv::Mat* src_image) {
         return false;
     }
 
+    // holds image copy to process with
+    cv::Mat temp = src_image->clone();
+
     // concat the extra space for the Pyramid
     int col_ext = src_image->rows / 2;
     cv::Mat extra = cv::Mat::Mat(src_image->rows, col_ext, CV_8UC1);
     cv::hconcat(*src_image,extra,*src_image);
 
+    // loop here
     // average the image by 1 pass
-
+    temp = MeanSmoothingReturn(&temp, 1);
+    // holds the downscaled version of temp
+    cv::Mat down = cv::Mat::Mat(temp.rows/2, temp.cols/2, CV_8UC1);
     // remove every even row and column
+    for (int i = 0; i < down.rows; ++i) {
+        for (int j = 0; j < down.cols; ++j) {
+            down.at<uchar>(i, j) = (uchar) temp.at<uchar>(i*2+1, j*2+1);
+        }
+    }
+    /*int i = 0, j = 0, k = 0, l = 0;
+    for (i = 0; i < temp.rows; ++i, ++k) {
+        for (j = 0; j < temp.cols; ++j, ++l) {
+            if (l == down.cols) {
+                l = 0;
+            }
+            if (i % 2 != 0 && j % 2 != 0) {
+                down.at<uchar>(k,l) = (uchar) temp.at<uchar>(i,j);
+            }
+        }
+    }*/
 
     cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
-	cv::imshow("Output image", *src_image);
+	//cv::imshow("Output image", *src_image);
+    cv::imshow("Output image", down);
     cv::waitKey(0);
 
     extra.release();
