@@ -178,7 +178,7 @@ bool GaussianPyramid(cv::Mat* src_image) {
     // coords to place the downsamples
     int place_row = 0, place_col = original.cols;
     // for the images at the bottom
-    int pr_bot_start = 0, pc_bot_le= 0;
+    int pr_bot_start = 0, pc_bot_le = 0;
     int pr_bot = pr_bot_start, pc_bot = pc_bot_le;
 
     // loop here
@@ -204,15 +204,10 @@ bool GaussianPyramid(cv::Mat* src_image) {
         }
 
         // place the images at the bottom
-        if (down.cols == 128) {
-
-        }
-        if (down.cols <= 128) {
-            if (down.cols < 128) {
-                upsample = Upsample(&down, 128);
-            } else if (down.cols == 128){
-                upsample = down.clone();
-            }
+        if (down.cols <= 128 && pc_bot_le != src_image->cols) {
+            upsample = Upsample(&down, 128);
+            std::cout << "down: wrote to r,c :: " << down.rows << " , " << down.cols << std::endl;
+            std::cout << "upsample: wrote to r,c :: " << upsample.rows << " , " << upsample.cols << std::endl;
             for (int a = 0; a < upsample.rows; ++a) {
                 for (int b = 0; b < upsample.cols; ++b) {
                     if (pc_bot > (pc_bot_le + 128-1)) {
@@ -241,12 +236,13 @@ bool GaussianPyramid(cv::Mat* src_image) {
 	cv::imshow("Gaussian pyramid", *src_image);
     cv::waitKey(0);
 
-    original.release();
+    // TODO something here was causing free errors
+    /*original.release();
     temp.release();
     extra.release();
     down.release();
     scale_arr.release();
-    upsample.release();
+    upsample.release();*/
 
     return true;
 }
@@ -996,6 +992,9 @@ cv::Mat Upsample(const cv::Mat* src_image, int target_size) {
     if (src_image->cols == target_size) {
         std::cout << "\nError (smoothing.cpp/Upsample): " << std::endl;
         std::cout << "\tNo upsampling required due to same target dimensions" << std::endl;
+        /*cv::namedWindow("No sample", CV_WINDOW_AUTOSIZE);
+        cv::imshow("No sample", *src_image);
+        cv::waitKey(0);*/
         return src_image->clone();
     }
 
@@ -1023,6 +1022,10 @@ cv::Mat Upsample(const cv::Mat* src_image, int target_size) {
         original = upsized.clone();
         upsized = cv::Mat::Mat(original.rows*2, original.rows*2, CV_8UC1);
     }
+
+    /*cv::namedWindow("Upsample", CV_WINDOW_AUTOSIZE);
+    cv::imshow("Upsample", output);
+    cv::waitKey(0);*/
 
     original.release();
     upsized.release();
