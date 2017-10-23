@@ -81,10 +81,27 @@ bool CheckIsSquare(int value) {
     }
 
     return true;
-
 }
 
 void TEST_CheckIsSquare() {
+    return;
+}
+
+bool CheckPowTwo(int value) {
+    if (value < 0) {
+        std::cout << "\nError (smoothing.cpp/CheckPowTwo): " << std::endl;
+        std::cout << "\tPassed value was negative" << std::endl;
+        return false;
+    } else if (value == 0) {
+        std::cout << "\nError (smoothing.cpp/CheckPowTwo): " << std::endl;
+        std::cout << "\tPassed value was 0" << std::endl;
+        return false;
+    }
+
+    return (value & (value - 1)) == 0;
+}
+
+void TEST_CheckPowTwo() {
     return;
 }
 
@@ -929,20 +946,28 @@ cv::Mat Upsample(const cv::Mat* src_image, int target_size) {
         return cv::Mat();
     }
 
-    if (CheckIsSquare(target_size) == false) {
+    if (CheckSliceDimensions(src_image) == false) {
         std::cout << "\nError (smoothing.cpp/Upsample): " << std::endl;
-        std::cout << "\tPassed target size was not square" << std::endl;
+        std::cout << "\tPassed image was not square" << std::endl;
         return cv::Mat();
+    }
+
+    if (CheckPowTwo(target_size) == false) {
+        std::cout << "\nError (smoothing.cpp/Upsample): " << std::endl;
+        std::cout << "\tPassed target size was not a valid power of two" << std::endl;
+        return cv::Mat();
+    }
+
+    if (src_image->cols == target_size) {
+        std::cout << "\nError (smoothing.cpp/Upsample): " << std::endl;
+        std::cout << "\tNo upsampling required due to same target dimensions" << std::endl;
+        return src_image->clone();
     }
 
     cv::Mat original = src_image->clone();
     cv::Mat upsized = cv::Mat::Mat(original.rows*2, original.rows*2, CV_8UC1);
     cv::Mat output;
     cv::Mat slice;
-
-    std::cout << "UPSAMPLE ~" << std::endl;
-    std::cout << "o1: " << original.rows << " , " << original.cols << std::endl;
-    std::cout << "u1: " << upsized.rows << " , " << upsized.cols << std::endl;
 
     // transfer pixels from original to upsize until targer size
     while (output.cols != target_size) {
@@ -963,12 +988,6 @@ cv::Mat Upsample(const cv::Mat* src_image, int target_size) {
         original = upsized.clone();
         upsized = cv::Mat::Mat(original.rows*2, original.rows*2, CV_8UC1);
     }
-
-    std::cout << "out: " << output.rows << " , " << output.cols << std::endl;
-
-    cv::namedWindow("Upsized", CV_WINDOW_AUTOSIZE);
-	cv::imshow("Upsized", output);
-    cv::waitKey(0);
 
     original.release();
     upsized.release();

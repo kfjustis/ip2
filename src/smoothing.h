@@ -26,6 +26,14 @@ bool CheckIsSquare(int value);
 void TEST_CheckIsSquare();
 
 /*
+ * Checks to see if the given value is a valid power of two.
+ * PARAMS: int value - the value to be checked, must be non-zero and positive
+ * RETURN bool - true on success, false on failure
+ */
+bool CheckPowTwo(int value);
+void TEST_CheckPowTwo();
+
+/*
  * Checks that the dimensions of the slice are a perfect square.
  * PARAMS: const cv::Mat* src - reference to the source matrix
  * RETURN: bool - true on success, false on failure
