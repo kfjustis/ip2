@@ -174,7 +174,7 @@ bool GaussianPyramid(cv::Mat* src_image) {
     // average the image by 1 pass
     temp = MeanSmoothingReturn(&temp, 1);
     // holds the downscaled version of temp
-    cv::Mat down = cv::Mat::Mat(temp.rows/2, temp.cols/2, CV_8UC1);
+    cv::Mat down = cv::Mat::Mat((int)round(temp.rows/2), (int)round(temp.cols/2), CV_8UC1);
     // coords to place the downsamples
     int place_row = 0, place_col = original.cols;
     // for the images at the bottom
@@ -187,6 +187,12 @@ bool GaussianPyramid(cv::Mat* src_image) {
         for (int i = 0; i < down.rows; ++i) {
             for (int j = 0; j < down.cols; ++j) {
                 down.at<uchar>(i,j) = (uchar) temp.at<uchar>(i*2+1, j*2+1);
+                if (i == down.rows-1) {
+                    down.at<uchar>(i,j) = (uchar) temp.at<uchar>(i*2, j*2);
+                }
+                if (j == down.cols-1) {
+                    down.at<uchar>(i,j) = (uchar) temp.at<uchar>(i*2, j*2);
+                }
             }
         }
 
