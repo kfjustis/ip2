@@ -118,6 +118,7 @@ bool GaussianPyramid(cv::Mat* src_image) {
     }
 
     // holds image copy to process with
+    cv::Mat original = src_image->clone();
     cv::Mat temp = src_image->clone();
 
     // concat the extra space for the Pyramid
@@ -125,34 +126,40 @@ bool GaussianPyramid(cv::Mat* src_image) {
     cv::Mat extra = cv::Mat::Mat(src_image->rows, col_ext, CV_8UC1);
     cv::hconcat(*src_image,extra,*src_image);
 
-    // loop here
     // average the image by 1 pass
     temp = MeanSmoothingReturn(&temp, 1);
     // holds the downscaled version of temp
     cv::Mat down = cv::Mat::Mat(temp.rows/2, temp.cols/2, CV_8UC1);
+    // coords to place the downsamples
+    int place_row = 0, place_col = original.cols;
+    std::cout << "py: start coord: " << place_row << " , " << place_col << std::endl;
+
+    // loop here
     // remove every even row and column
     for (int i = 0; i < down.rows; ++i) {
         for (int j = 0; j < down.cols; ++j) {
-            down.at<uchar>(i, j) = (uchar) temp.at<uchar>(i*2+1, j*2+1);
+            down.at<uchar>(i,j) = (uchar) temp.at<uchar>(i*2+1, j*2+1);
         }
     }
-    /*int i = 0, j = 0, k = 0, l = 0;
-    for (i = 0; i < temp.rows; ++i, ++k) {
-        for (j = 0; j < temp.cols; ++j, ++l) {
-            if (l == down.cols) {
-                l = 0;
-            }
-            if (i % 2 != 0 && j % 2 != 0) {
-                down.at<uchar>(k,l) = (uchar) temp.at<uchar>(i,j);
+    // place into source image
+    for (int y = 0; y < down.rows; ++y) {
+        for (int z = 0; z < down.cols; ++z) {
+            src_image->at<uchar>(place_row, place_col) = (uchar) down.at<uchar>(y,z);
+            place_col++;
+            if (place_col == src_image->cols) {
+                place_col = original.cols;
             }
         }
-    }*/
+        place_row++;
+    }
 
     cv::namedWindow("Output image", CV_WINDOW_AUTOSIZE);
-	//cv::imshow("Output image", *src_image);
-    cv::imshow("Output image", down);
+	cv::imshow("Output image", *src_image);
+    //cv::imshow("Output image", down);
     cv::waitKey(0);
 
+    original.release();
+    temp.release();
     extra.release();
 
     return true;
