@@ -278,7 +278,7 @@ bool GaussianSmoothing(const cv::Mat* src_image, unsigned int sigma) {
     double sig_2 = 1.0;
     double value = 1.0;
     int temp_pixel = 0;
-
+    int out_pixel = 0;
     for (int i = 0; i < padded_image.rows-kernel_size+1; ++i) {
         for (int j = 0; j < padded_image.cols-kernel_size+1; ++j) {
             slice = GetMatrixSlice(&padded_image, i, j, kernel_size);
@@ -298,7 +298,13 @@ bool GaussianSmoothing(const cv::Mat* src_image, unsigned int sigma) {
                     //std::cout << "\ty_2 was: " << y_2 << std::endl;
                     //std::cout << "\tsig_2 was: " << sig_2 << std::endl;
                     // this is from Assignment 2 Q&A slides
-                    value = (1.0/(2*3.14159*sig_2)) * exp(-((x_2+y_2)/(2*sig_2)));
+                    //value = (1.0/(2*3.14159*sig_2)) * exp(-((x_2+y_2)/(2*sig_2)));
+                    value = (1.0/(2*3.14159)) * exp(-((x_2+y_2)/(2*sig_2)));
+                    if (value > 255.0) {
+                        value = 255.0;
+                    } else if (value < 0.0) {
+                        value = 0.0;
+                    }
                     //std::cout << "\tvalue was: " << sig_2 << std::endl;
                     temp_pixel = (slice.at<uchar>(k,l) * value);
                     //std::cout << "\tpixel was: " << pixel << std::endl;
@@ -308,7 +314,14 @@ bool GaussianSmoothing(const cv::Mat* src_image, unsigned int sigma) {
                         temp_pixel = 0;
                     }
                     slice.at<uchar>(k,l) = (uchar) temp_pixel;
-                    output.at<uchar>(i+k,j+l) = (uchar) slice.at<uchar>(k,l) * 25;
+                    out_pixel = slice.at<uchar>(k,l) * 20;
+                    //out_pixel = slice.at<uchar>(k,l);
+                    if (out_pixel > 255) {
+                        out_pixel = 255;
+                    } else if (out_pixel < 0) {
+                        out_pixel = 0;
+                    }
+                    output.at<uchar>(i+k,j+l) = (uchar) out_pixel;
                 }
             }
 
@@ -519,10 +532,23 @@ bool ImageSharpen(const cv::Mat* src_image, unsigned int data) {
         return false;
     }
 
+    int first_val = 0, second_val = 0;
     for (int i = 0; i < original_mask.rows; ++i) {
         for (int j = 0; j < original_mask.cols; ++j) {
-            original_mask.at<int>(i,j) = (int) 4 * (original.at<int>(i,j) - after_filter.at<int>(i,j));
-            output.at<int>(i,j) = original.at<int>(i,j) + original_mask.at<int>(i,j);
+            first_val = (int) 4 * (original.at<uchar>(i,j) - after_filter.at<uchar>(i,j));
+            if (first_val < 0) {
+                first_val = 0;
+            } else if (first_val > 255) {
+                first_val = 255;
+            }
+            original_mask.at<uchar>(i,j) = first_val;
+            second_val = original.at<uchar>(i,j) + original_mask.at<uchar>(i,j);
+            if (second_val < 0) {
+                second_val = 0;
+            } else if (second_val > 255) {
+                second_val = 255;
+            }
+            output.at<uchar>(i,j) = second_val;
         }
     }
 
