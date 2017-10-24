@@ -324,34 +324,6 @@ bool GaussianSmoothing(const cv::Mat* src_image, unsigned int sigma) {
                     output.at<uchar>(i+k,j+l) = (uchar) out_pixel;
                 }
             }
-
-            /*std::cout << "\nMessage (smoothing.cpp/GaussianSmoothing): " << std::endl;
-            std::cout << "\tgaussian slice: " << std::endl << slice << std::endl;*/
-
-            /*if ((average = AverageMatrix(&slice)) == -1) {
-                std::cout << "\nError (smoothing.cpp/MeanSmoothing): " << std::endl;
-                std::cout << "\tFailed to average during processing" << std::endl;
-                return false;
-            }
-            //std::cout << "average: " << average << std::endl;
-            output.at<uchar>(i,j) = (uchar) average;*/
-
-            // calculate kernel value from slides
-            /*x_2 = pow((double)i, 2.0);
-            y_2 = pow((double)j, 2.0);
-            sig_2 = pow((double)sigma, 2.0);
-            value = (double)-((x_2 + y_2)/(2.0 * sig_2));
-            pixel = exp(value);
-
-            std::cout << "\nMessage (smoothing.cpp/GaussianSmoothing): " << std::endl;
-            std::cout << "\tx_2 was: " << x_2 << std::endl;
-            std::cout << "\ty_2 was: " << y_2 << std::endl;
-            std::cout << "\tsig_2 was: " << sig_2 << std::endl;
-            std::cout << "\tvalue was: " << value << std::endl;
-            std::cout << "\tpixel was: " << pixel << std::endl;*/
-
-            // store in the output matrix
-            //output.at<uchar>(i,j) = (uchar) ((int)pixel);
         }
     }
 
